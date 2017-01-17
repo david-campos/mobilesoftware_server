@@ -5,13 +5,22 @@ use mysqli;
 
 abstract class MysqliDAO
 {
-    protected $link = null;
+    /**
+     * Static link to mysqli, we try to keep all the DAO's connected with the same link to the database
+     * @var null|mysqli
+     */
+    protected static $link = null;
+    private static $instances = 0;
 
     function __construct() {
-        $this->link = new mysqli(MYSQLI_HOST, MYSQLI_USER, MYSQLI_PASS, MYSQLI_DB);
+        if (static::$link)
+            static::$link = new mysqli(MYSQLI_HOST, MYSQLI_USER, MYSQLI_PASS, MYSQLI_DB);
+        static::$instances++;
     }
 
-    function close() {
-        if ($this->link) $this->link->close();
+    function __destruct() {
+        static::$instances--;
+        if (static::$instances < 1 && static::$link)
+            static::$link->close();
     }
 }

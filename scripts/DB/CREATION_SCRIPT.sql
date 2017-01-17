@@ -56,7 +56,7 @@ CREATE TABLE `Propositions` (
 	`proposer` INT NOT NULL,
 	`reason` VARCHAR(50) DEFAULT NULL,
 	-- The next is done down because Appointments doesn't exist yet!
-	--FOREIGN KEY (`appointment`) REFERENCES `Appointments`(`_id`)
+	-- FOREIGN KEY (`appointment`) REFERENCES `Appointments`(`_id`)
 	--	ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (`proposer`) REFERENCES `Users`(`_id`)
 		ON DELETE CASCADE ON UPDATE CASCADE,
@@ -68,14 +68,14 @@ CREATE TABLE `Propositions` (
 -- Table Appointments
 -- Saves the data of the appointments the users can propose
 CREATE TABLE `Appointments` (
-	`_id` INT NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(50) NOT NULL,
-	`description` TEXT,
-	`closed` TINYINT(1) DEFAULT 0,
-	`type` VARCHAR(50) NOT NULL,
-	`creator` INT NOT NULL,
-	`currentProposal` TIMESTAMP NOT NULL,
-	`currentPlaceName` VARCHAR(100) NOT NULL,
+	`_id`              INT         NOT NULL AUTO_INCREMENT,
+	`name`             VARCHAR(50) NOT NULL,
+	`description`      TEXT,
+	`closed`           TINYINT(1)           DEFAULT 0,
+	`type`             VARCHAR(50) NOT NULL,
+	`creator`          INT         NOT NULL,
+	`currentProposal`  TIMESTAMP,
+	`currentPlaceName` VARCHAR(100),
 	FOREIGN KEY (`type`) REFERENCES `AppointmentTypes`(`name`)
 		ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (`creator`) REFERENCES `Users`(`_id`)
@@ -95,10 +95,10 @@ ALTER TABLE `Propositions` ADD CONSTRAINT fk_appointment
 -- Saves the relation between users invited to an appointment
 -- and the appointment.
 CREATE TABLE `InvitedTo` (
-	`user` INT NOT NULL,
-	`appointment` INT NOT NULL,
-	`state` ENUM('pending','accepted','refused') NOT NULL DEFAULT 0,
-	`reason` VARCHAR(50) DEFAULT NULL,
+	`user`        INT                                     NOT NULL,
+	`appointment` INT                                     NOT NULL,
+	`state`       ENUM ('pending', 'accepted', 'refused') NOT NULL DEFAULT 1,
+	`reason`      VARCHAR(50)                                      DEFAULT NULL,
 	FOREIGN KEY (`user`) REFERENCES `Users`(`_id`)
 		ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY (`appointment`) REFERENCES `Appointments`(`_id`)

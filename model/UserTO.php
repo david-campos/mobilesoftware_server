@@ -3,6 +3,8 @@
 namespace model;
 
 
+use controller\ImageManager;
+
 class UserTO extends AbstractTO
 {
     private $_id;
@@ -18,6 +20,16 @@ class UserTO extends AbstractTO
         $this->name = $name;
         $this->picture_id = $pictureId;
         $this->blocked_ids = $blockedIds;
+    }
+
+    public function toAssociativeArray(): array {
+        return array(
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+            "phone" => $this->getPhone(),
+            "picture_id" => $this->getPictureId(),
+            "blocked_ids" => $this->getBlockedIds()
+        );
     }
 
     public function getPhone(): string {
@@ -37,7 +49,13 @@ class UserTO extends AbstractTO
     }
 
     public function getPicture(): string {
-        //TODO: getPicture based on the pictureId
+        // We add /../model to start from where the ImageManager is saved
+        $dir = dirname(__FILE__) . '/../model' . ImageManager::IMAGE_DIR;
+        foreach (preg_split('/\,/', ImageManager::IMAGE_EXTENSIONS) as $extension) {
+            if (file_exists($dir . '.' . $extension))
+                return $dir . '.' . $extension;
+        }
+        return null;
     }
 
     public function getBlockedIds(): array {

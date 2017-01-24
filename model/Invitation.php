@@ -52,11 +52,13 @@ class Invitation
         }
     }
 
-    /**
-     * @param int $user
-     */
-    public function setUser(int $user) {
-        $this->user = $user;
+    public function toAssociativeArray(): array {
+        return array(
+            "user" => $this->getUser(),
+            "state" => $this->getState(),
+            "reasonName" => $this->getReasonName(),
+            "reasonDescription" => $this->getReasonDescription()
+        );
     }
 
     /**

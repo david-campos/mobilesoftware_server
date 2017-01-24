@@ -26,7 +26,7 @@ abstract class DAOFactory
     /**
      * Creates or gets the singleton instance of the factory.
      * Editing this method you can change the complete family in use.
-     * @return MysqliDAOFactory
+     * @return DAOFactory
      */
     static public function getInstance(): DAOFactory {
         if (static::$singletonInstance === null) {
@@ -35,30 +35,36 @@ abstract class DAOFactory
             return static::$singletonInstance;
     }
 
-    abstract public function obtainUsersDAO();
+    abstract public function obtainUsersDAO(): IUsersDAO;
 
-    abstract public function obtainAppointmentsDAO();
+    abstract public function obtainAppointmentsDAO(): IAppointmentsDAO;
 
-    abstract public function obtainPropositionsDAO();
+    abstract public function obtainPropositionsDAO(): IPropositionsDAO;
 
-    abstract public function obtainSessionsDAO();
+    abstract public function obtainSessionsDAO(): SessionsDAO;
+
+    abstract public function obtainTypesAndReasonsDAO(): ITypesAndReasonsDAO;
 }
 
 class MysqliDAOFactory extends DAOFactory
 {
     public function obtainUsersDAO(): IUsersDAO {
-        // TODO: Implement obtainUsersDAO() method.
+        return new MysqliUsersDAO();
     }
 
     public function obtainAppointmentsDAO(): IAppointmentsDAO {
-        // TODO: Implement obtainAppointmentsDAO() method.
+        return new MysqliAppointmentsDAO();
     }
 
     public function obtainPropositionsDAO(): IPropositionsDAO {
-        // TODO: Implement obtainPropositionsDAO() method.
+        return new MysqliPropositionsDAO();
     }
 
-    public function obtainSessionsDAO() {
-        // TODO: Implement obtainSessionsDAO() method.
+    public function obtainSessionsDAO(): SessionsDAO {
+        return new SessionsDAO(new MysqliSessionsDAO());
+    }
+
+    public function obtainTypesAndReasonsDAO(): ITypesAndReasonsDAO {
+        return new MysqliTypesAndReasonsDAO();
     }
 }

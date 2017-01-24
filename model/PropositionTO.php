@@ -42,6 +42,17 @@ class PropositionTO
         $this->appointment = $appointment;
     }
 
+    public function toAssociativeArray(): array {
+        return array(
+            "time" => $this->getTimestamp(),
+            "coordinates" => $this->getCoordinates(),
+            "placeName" => $this->getPlaceName(),
+            "reasonName" => $this->getReasonName(),
+            "reasonDescription" => $this->getReasonDescription(),
+            "proposer" => $this->getProposer(),
+            "appointment" => $this->getAppointmentId()
+        );
+    }
 
     public function getTimestamp(): int {
         return $this->time;

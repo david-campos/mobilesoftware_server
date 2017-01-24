@@ -20,6 +20,17 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $stmt->execute();
         $stmt->fetch();
         $stmt->close();
+
+        $stmt = static::$link->prepare('INSERT INTO `Blocked` (`blocker`, `blocked`)
+                                        SELECT * FROM (SELECT ?,?) AS tmp
+                                        WHERE NOT EXISTS (
+                                          SELECT `blocked` FROM `Blocked` WHERE `blocker`=? AND `blocked`= ?
+                                        ) LIMIT 1;');
+        $stmt->bind_param('ii', $id, $otherId);
+        foreach ($userTO->getBlockedIds() as $otherId) {
+            $stmt->execute();
+        }
+        $stmt->close();
         static::$link->commit();
     }
 
@@ -50,7 +61,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         static::$link->begin_transaction();
         $name = "New user";
         $pic = 0;
-        $stmt = static::$link->prepare('INSERT VALUES(?,?,?) INTO `Users`(`phone`,`name`,`picture_id`)');
+        $stmt = static::$link->prepare('INSERT INTO `Users`(`phone`,`name`,`picture_id`) VALUES(?,?,?)');
         $stmt->bind_param('ssi', $phoneNumber, $name, $pic);
         $stmt->execute();
         $stmt->close();

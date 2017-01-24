@@ -40,6 +40,10 @@ class AppointmentTO extends AbstractTO
      */
     private $invitations;
     /**
+     * @var IInvitationsUpdater
+     */
+    private $invitationsUpdater;
+    /**
      * @var PropositionTO
      */
     private $currentProposition;
@@ -54,11 +58,14 @@ class AppointmentTO extends AbstractTO
      * @param int $creatorId
      * @param PropositionTO $currentProposition
      * @param array $invitations
+     * @param IInvitationsUpdater $invitationsUpdater
      * @param ISyncDAO $dao
      */
     public function __construct(string $name, string $description, bool $closed, int $id, string $typeName,
-                                int $creatorId, PropositionTO $currentProposition, array $invitations, ISyncDAO $dao) {
+                                int $creatorId, PropositionTO $currentProposition, array $invitations,
+                                IInvitationsUpdater $invitationsUpdater, ISyncDAO $dao) {
         parent::__construct($dao);
+        $this->invitationsUpdater = $invitationsUpdater;
         $this->name = $name;
         $this->description = $description;
         $this->closed = $closed;
@@ -71,6 +78,22 @@ class AppointmentTO extends AbstractTO
         });
     }
 
+    public function toAssociativeArray(): array {
+        $invitations = array();
+        foreach ($this->getInvitations() as $inv) {
+            $invitations[] = $inv->toAssociativeArray();
+        }
+        return array(
+            "name" => $this->getName(),
+            "description" => $this->getDescription(),
+            "closed" => $this->isClosed(),
+            "id" => $this->getId(),
+            "typeName" => $this->getTypeName(),
+            "creator" => $this->getCreatorId(),
+            "currentProposition" => $this->getCurrentProposition()->toAssociativeArray(),
+            "invitations" => $invitations
+        );
+    }
 
     /**
      * @return string
@@ -178,9 +201,28 @@ class AppointmentTO extends AbstractTO
     }
 
     /**
-     * @returns array(Invitation)
+     * @returns Invitation[]
      */
     public function getInvitations(): array {
         return $this->invitations;
+    }
+
+    public function updateInvitationsFromBD(): void {
+        $this->invitationsUpdater->loadInvitationsFromBD($this);
+    }
+
+    public function deleteInvitations(): void {
+        $this->invitations = array();
+    }
+
+    /**
+     * @param Invitation[] $invitations
+     */
+    public function addInvitations(array $invitations): void {
+        foreach ($invitations as $inv) {
+            if ($inv instanceof Invitation) {
+                $this->invitations[] = $inv;
+            }
+        }
     }
 }

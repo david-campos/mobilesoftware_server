@@ -1,0 +1,73 @@
+{
+  "requests": {
+    "init_session": {
+      "name": "ses"
+    },
+    "get_appointment_types_and_reasons": {
+      "name": "tar"
+    },
+    "create_appointment": {
+      "name": "nappo",
+      "param_name": "n",
+      "param_description": "d",
+      "param_closed": "c",
+      "param_type": "t",
+      "param_invited_users": "u",
+      "param_timestamp": "h",
+      "param_place": "p",
+      "param_coords_lat": "la",
+      "param_coords_lon": "lo",
+      "param_reason": "r"
+    },
+    "close_appointment": {
+      "name": "cappo"
+    },
+    "accept_proposition": {
+      "name": "aprop",
+      "param_place": "p",
+      "param_timestamp": "h"
+    },
+    "accept_invitation": {
+      "name": "ainv"
+    },
+    "refuse_invitation": {
+      "name": "rinv",
+      "param_reason": "r"
+    },
+    "create_proposition": {
+      "name": "nprop",
+      "param_place": "p",
+      "param_timestamp": "h",
+      "param_lon": "lo",
+      "param_lat": "la",
+      "param_reason": "r"
+    },
+    "get_user_appointments": {
+      "name": "gappo"
+    },
+    "get_appointment_propositions": {
+      "name": "gprop"
+    },
+    "block_user": {
+      "name": "block",
+      "param_blocked_phone": "p"
+    },
+    "change_user_name": {
+      "name": "cname",
+      "param_name": "n"
+    },
+    "change_profile_pic": {
+      "name": "cpic"
+    },
+    "remove_profile_pic": {
+      "name": "rpic"
+    }
+  },
+  "general_params": {
+    "request": "req",
+    "phone": "phn",
+    "appointment_id": "aid",
+    "session_key": "key",
+    "session_id": "ses"
+  }
+}

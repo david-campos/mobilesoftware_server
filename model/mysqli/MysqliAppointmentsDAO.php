@@ -9,7 +9,7 @@
 namespace model;
 
 
-class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISyncDAO
+class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISyncDAO, IInvitationsUpdater
 {
     private function getInvitationsFor(int $id): array {
         $invitations = array();
@@ -63,7 +63,7 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $invitations = $this->getInvitationsFor($id);
 
         $appointment = new AppointmentTO($name, $description, $closed, $id, $type, $creator, $proposition, $invitations,
-            $this);
+            $this, $this);
         static::$link->commit();
 
         return $appointment;
@@ -131,6 +131,60 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $stmt->bind_param('ssisiss', $name, $description, $closed, $type, $creator, $currentProposal, $currentPlaceName);
         $stmt->execute();
         $stmt->close();
+
+        $inv_appo = $inv_reason = $inv_state = $inv_user = null;
+        $stmt = static::$link->prepare('UPDATE `InvitedTo` SET `reason`=?, `state`=?
+                                        WHERE `user`=? AND `appointment`=? LIMIT 1');
+        $stmt->bind_param('ssii', $inv_reason, $inv_state, $inv_user, $inv_appo);
+        $inv_appo = $TO->getId();
+        foreach ($TO->getInvitations() as $invitation) {
+            $inv_reason = $invitation->getReasonName();
+            $inv_state = $invitation->getState();
+            $inv_user = $invitation->getUser();
+
+            $stmt->execute();
+        }
+        $stmt->close();
+
+        static::$link->commit();
+    }
+
+    function obtainAppointmentsOfUser(int $userId): array {
+        static::$link->begin_transaction();
+
+        $stmt = static::$link->prepare('SELECT `name`, `description`, `closed`, `type`, `creator`, `currentProposal`, `currentPlaceName`
+                                      FROM `Appointments` a JOIN `InvitedTo` i ON a.`_id` = i.`appointment`
+                                      WHERE a.`creator`=? OR i.`user` = ? 
+                                      GROUP BY a.`_id`');
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $array = array();
+        $stmt->bind_result($name, $description, $closed, $type, $creator, $currentProposal, $currentPlaceName);
+        while ($stmt->fetch()) {
+            $currentProposal = strtotime($currentProposal);
+            $proposition = DAOFactory::getInstance()->obtainPropositionsDAO()
+                ->obtainPropositionTO($id, $currentProposal, $currentPlaceName);
+
+            $invitations = $this->getInvitationsFor($id);
+
+            $appointment = new AppointmentTO($name, $description, $closed, $id, $type, $creator, $proposition, $invitations,
+                $this, $this);
+
+            $array[] = $appointment;
+        }
+        $stmt->close();
+
+        static::$link->commit();
+
+        return $array;
+    }
+
+    public function loadInvitationsFromBD(AppointmentTO $appointment): void {
+        static::$link->begin_transaction();
+
+        $appointment->deleteInvitations();
+        $invitations = $this->getInvitationsFor($appointment->getId());
+        $appointment->addInvitations($invitations);
 
         static::$link->commit();
     }

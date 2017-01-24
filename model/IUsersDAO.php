@@ -7,5 +7,5 @@ interface IUsersDAO
 {
     function obtainUserTO(string $phoneNumber): UserTO;
 
-    function createUser(string $phoneNumber): void;
+    function createUser(string $phoneNumber);
 }

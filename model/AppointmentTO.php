@@ -207,18 +207,18 @@ class AppointmentTO extends AbstractTO
         return $this->invitations;
     }
 
-    public function updateInvitationsFromBD(): void {
+    public function updateInvitationsFromBD() {
         $this->invitationsUpdater->loadInvitationsFromBD($this);
     }
 
-    public function deleteInvitations(): void {
+    public function deleteInvitations() {
         $this->invitations = array();
     }
 
     /**
      * @param Invitation[] $invitations
      */
-    public function addInvitations(array $invitations): void {
+    public function addInvitations(array $invitations) {
         foreach ($invitations as $inv) {
             if ($inv instanceof Invitation) {
                 $this->invitations[] = $inv;

@@ -114,10 +114,14 @@ CREATE TABLE `InvitedTo` (
 -- Saves the information about the current and past sessions the moviles
 -- initiated in the server.
 CREATE TABLE `Sessions` (
-	`_id`               INT NOT NULL AUTO_INCREMENT,
-	`session_key`       CHAR(128) NOT NULL,
-	`initial_timestamp` TIMESTAMP NOT NULL,
-	`final_timestamp`   TIMESTAMP    DEFAULT '0000-00-00 00:00:00',
+  `_id`               INT       NOT NULL AUTO_INCREMENT,
+  `user`              INT       NOT NULL,
+  `session_key`       CHAR(128) NOT NULL,
+  `initial_timestamp` TIMESTAMP NOT NULL,
+  `final_timestamp`   TIMESTAMP          DEFAULT '0000-00-00 00:00:00',
+  FOREIGN KEY (`user`) REFERENCES `Users` (`_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
 	PRIMARY KEY (`_id`)
 );
 

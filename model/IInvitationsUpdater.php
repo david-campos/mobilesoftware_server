@@ -11,5 +11,5 @@ namespace model;
 
 interface IInvitationsUpdater
 {
-    public function loadInvitationsFromBD(AppointmentTO $appointment): void;
+    public function loadInvitationsFromBD(AppointmentTO $appointment);
 }

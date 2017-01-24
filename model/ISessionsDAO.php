@@ -15,5 +15,5 @@ interface ISessionsDAO
 
     public function getSessionKey(int $id, string $phone): string;
 
-    public function closeSession(int $id): void;
+    public function closeSession(int $id);
 }

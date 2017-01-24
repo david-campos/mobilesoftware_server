@@ -62,22 +62,22 @@ class UserTO extends AbstractTO
         return $this->blocked_ids;
     }
 
-    public function setName(string $name): void {
+    public function setName(string $name) {
         $this->name = $name;
         $this->synchronized = false;
     }
 
-    public function setPictureId(int $id): void {
+    public function setPictureId(int $id) {
         $this->picture_id = $id;
         $this->synchronized = false;
     }
 
-    public function addBlockedId(int $userId): void {
+    public function addBlockedId(int $userId) {
         $this->blocked_ids[] = $userId;
         $this->synchronized = false;
     }
 
-    public function remBlockedId(int $userId): void {
+    public function remBlockedId(int $userId) {
         $idx = array_search($userId, $this->blocked_ids);
         if ($idx !== false) {
             $this->blocked_ids = array_splice($this->blocked_ids, $idx, 1);

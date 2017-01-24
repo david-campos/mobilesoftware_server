@@ -8,6 +8,9 @@
 
 namespace controller;
 
+require_once dirname(__FILE__) . '/controller_exceptions/RequiredParameterException.php';
+
+use exceptions\RequiredParameterException;
 const STRINGS_PATH = "/strings.json";
 
 abstract class Strings
@@ -33,5 +36,19 @@ abstract class Strings
 
     public static function getGenParam(string $param): string {
         return static::getConstants()['general_params'][$param];
+    }
+
+    public static function getParamValueIn(string $request, string $param_name, array $vars): string {
+        $key = static::getReqParam($request, $param_name);
+        if (!array_key_exists($key, $vars))
+            throw new RequiredParameterException("Required parameter '$key' not found.");
+        return $vars[$key];
+    }
+
+    public static function getGenParamValueIn(string $param_name, array $vars): string {
+        $key = static::getGenParam($param_name);
+        if (!array_key_exists($key, $vars))
+            throw new RequiredParameterException("Required parameter '$key' not found.");
+        return $vars[$key];
     }
 }

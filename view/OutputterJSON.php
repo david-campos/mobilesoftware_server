@@ -15,17 +15,39 @@ use model\UserTO;
 
 class OutputterJSON implements Outputter
 {
+    private $rustart;
+
+    /**
+     * OutputterJSON constructor.
+     */
+    public function __construct() {
+        $this->rustart = getrusage();
+    }
+
+    // Script end
+    private function rutime($ru, $rus, $index) {
+        return ($ru["ru_$index.tv_sec"] * 1000.0 + intval($ru["ru_$index.tv_usec"] / 1000.0))
+        - ($rus["ru_$index.tv_sec"] * 1000.0 + intval($rus["ru_$index.tv_usec"] / 1000.0));
+    }
+
     private function safe_json_encode_and_print(array $array) {
         header('Content-Type: application/json;charset=utf-8');
 
-        $json = json_encode($array);
+        $ru = getrusage();
+        $wrap = array('result' => $array,
+            'permormance_info' => array(
+                'computationTime' => $this->rutime($ru, $this->rustart, "utime"),
+                'systemCallsTime' => $this->rutime($ru, $this->rustart, "stime")
+            ));
+
+        $json = json_encode($wrap);
         if ($json === false) {
             // Avoid echo of an empty string (invalid JSON)
             $json = json_encode(array("jsonError", json_last_error_msg()));
             if ($json === false) {
                 $json = '{"jsonError": "unknown"}'; // Extrem case
             }
-            http_response_code(500);
+            http_response_code(418);
         }
         echo $json;
     }

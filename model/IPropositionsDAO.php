@@ -22,5 +22,5 @@ interface IPropositionsDAO
     function createProposition(int $appointmentId, int $timestamp, string $placeName, array $coordinates,
                                string $reasonName, int $proposer): PropositionTO;
 
-    function deleteProposition(PropositionTO $proposition): void;
+    function deleteProposition(PropositionTO $proposition);
 }

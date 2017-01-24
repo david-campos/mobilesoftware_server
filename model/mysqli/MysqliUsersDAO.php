@@ -2,6 +2,9 @@
 
 namespace model;
 
+require_once dirname(__FILE__) . '/../model_exceptions/UnableToGetTOException.php';
+
+use exceptions\UnableToGetTOException;
 
 class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
 {
@@ -9,7 +12,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
     /**
      * @param $userTO UserTO
      */
-    function syncTO($userTO): void {
+    function syncTO($userTO) {
         static::$link->begin_transaction();
         $phone = $userTO->getPhone();
         $name = $userTO->getName();
@@ -22,11 +25,9 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $stmt->close();
 
         $stmt = static::$link->prepare('INSERT INTO `Blocked` (`blocker`, `blocked`)
-                                        SELECT * FROM (SELECT ?,?) AS tmp
-                                        WHERE NOT EXISTS (
-                                          SELECT `blocked` FROM `Blocked` WHERE `blocker`=? AND `blocked`= ?
-                                        ) LIMIT 1;');
-        $stmt->bind_param('ii', $id, $otherId);
+                                        VALUES (?,?)
+                                        ON DUPLICATE KEY UPDATE `blocker`=?');
+        $stmt->bind_param('iii', $id, $otherId, $id);
         foreach ($userTO->getBlockedIds() as $otherId) {
             $stmt->execute();
         }
@@ -40,7 +41,11 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $stmt->bind_param('s', $phoneNumber);
         $stmt->execute();
         $stmt->bind_result($id, $phone, $name, $picture_id);
-        $stmt->fetch();
+        if (!$stmt->fetch()) {
+            $stmt->close();
+            static::$link->rollback();
+            throw new UnableToGetTOException("Unable to get UserTO with phone '$phoneNumber'.");
+        }
         $stmt->close();
         $stmt = static::$link->prepare('SELECT `blocked` FROM `Blocked` WHERE `blocker`=?');
         $stmt->bind_param('i', $id);
@@ -57,7 +62,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         return new UserTO($id, $phone, $name, $picture_id, $blockedIds, $this);
     }
 
-    function createUser(string $phoneNumber): void {
+    function createUser(string $phoneNumber) {
         static::$link->begin_transaction();
         $name = "New user";
         $pic = 0;

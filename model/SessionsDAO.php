@@ -57,7 +57,7 @@ class SessionsDAO
         return $this->realDao->getSessionKey($id, $phone);
     }
 
-    public function closeSession(int $id): void {
+    public function closeSession(int $id) {
         $this->realDao->closeSession($id);
     }
 }

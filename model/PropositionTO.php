@@ -27,12 +27,12 @@ class PropositionTO
      * @param float $coordLon
      * @param string $placeName
      * @param string $reasonName
-     * @param string $reasonDescription
+     * @param string|null $reasonDescription
      * @param int $proposer
      * @internal param $coordinates
      */
-    public function __construct(int $appointment, int $time, double $coordLat, double $coordLon, string $placeName, string $reasonName,
-                                string $reasonDescription, int $proposer) {
+    public function __construct(int $appointment, int $time, float $coordLat, float $coordLon, string $placeName, string $reasonName,
+                                $reasonDescription, int $proposer) {
         $this->time = $time;
         $this->coordinates = array('lat' => $coordLat, 'lon' => $coordLon);
         $this->placeName = $placeName;

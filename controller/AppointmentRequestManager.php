@@ -12,9 +12,11 @@ require_once dirname(__FILE__) . '/controller_exceptions/WrongRequestException.p
 require_once dirname(__FILE__) . '/AppointmentInvitationsManager.php';
 require_once dirname(__FILE__) . '/AppointmentProposalsManager.php';
 
+use DateTime;
 use exceptions\WrongRequestException;
 use model\AppointmentTO;
 use model\DAOFactory;
+use model\PropositionTO;
 use model\UserTO;
 
 class AppointmentRequestManager
@@ -46,8 +48,7 @@ class AppointmentRequestManager
     }
 
     public function processAppointmentRequest(array $vars) {
-        $gen = Strings::getConstants()['general_params'];
-        $request = $vars[$gen['request']];
+        $request = Strings::getGenParamValueIn('request', $vars);
         switch ($request) {
             case Strings::getReqName('get_user_appointments'):
                 $this->requestProcessor->getOutputter()->printAppointmentList(
@@ -59,10 +60,13 @@ class AppointmentRequestManager
                     DAOFactory::getInstance()->obtainAppointmentsDAO()->obtainAppointmentTO($id));
                 break;
             default:
-                $appointmentId = $vars[Strings::getGenParam('appointment_id')];
+                $appointmentId = Strings::getGenParamValueIn('appointment_id', $vars);
                 $appointment = DAOFactory::getInstance()->obtainAppointmentsDAO()->obtainAppointmentTO($appointmentId);
                 if ($request === Strings::getReqName('close_appointment')) {
                     $this->closeAppointment($appointment);
+                    $this->requestProcessor->getOutputter()->printAppointment($appointment);
+                } else if ($request === Strings::getReqName('open_appointment')) {
+                    $this->openAppointment($appointment);
                     $this->requestProcessor->getOutputter()->printAppointment($appointment);
                 } else {
                     if ($request === Strings::getReqName('accept_invitation') ||
@@ -70,7 +74,7 @@ class AppointmentRequestManager
                     ) {
                         $invitationsManager = new AppointmentInvitationsManager($appointment, $this);
                         $newState = ($request === Strings::getReqName('accept_invitation')) ? 'accepted' : 'refused';
-                        $reasonName = $vars[Strings::getReqParam('refuse_invitation', 'param_reason')];
+                        $reasonName = Strings::getParamValueIn('refuse_invitation', 'param_reason', $vars);
                         $invitationsManager->changeInvitationState($newState, $reasonName);
                         $appointment->synchronize();
                         $appointment->updateInvitationsFromBD(); // Update invitation description
@@ -79,8 +83,8 @@ class AppointmentRequestManager
                         $proposalsManager = new AppointmentProposalsManager($appointment, $this);
                         switch ($request) {
                             case Strings::getReqName('accept_proposition'):
-                                $placeName = $vars[Strings::getReqParam('accept_proposition', 'param_place')];
-                                $timestamp = strtotime($vars[Strings::getReqParam('accept_proposition', 'param_timestamp')]);
+                                $placeName = Strings::getParamValueIn('accept_proposition', 'param_place', $vars);
+                                $timestamp = DateTime::createFromFormat('Y-m-d H:i:s', Strings::getParamValueIn('accept_proposition', 'param_timestamp', $vars))->getTimestamp();
                                 $proposalsManager->changeCurrentProposal($placeName, $timestamp);
                                 $this->requestProcessor->getOutputter()->printAppointment($appointment);
                                 break;
@@ -89,11 +93,11 @@ class AppointmentRequestManager
                                 $this->requestProcessor->getOutputter()->printPropositionList($list);
                                 break;
                             case Strings::getReqName('create_proposition'):
-                                $placeName = $vars[Strings::getReqParam('create_proposition', 'param_place')];
-                                $timestamp = strtotime($vars[Strings::getReqParam('create_proposition', 'param_timestamp')]);
-                                $placeLon = $vars[Strings::getReqParam('create_proposition', 'param_lon')];
-                                $placeLat = $vars[Strings::getReqParam('create_proposition', 'param_lat')];
-                                $reasonName = $vars[Strings::getReqParam('create_proposition', 'param_reason')];
+                                $placeName = Strings::getParamValueIn('create_proposition', 'param_place', $vars);
+                                $timestamp = DateTime::createFromFormat('Y-m-d H:i:s', Strings::getParamValueIn('create_proposition', 'param_timestamp', $vars))->getTimestamp();
+                                $placeLon = Strings::getParamValueIn('create_proposition', 'param_lon', $vars);
+                                $placeLat = Strings::getParamValueIn('create_proposition', 'param_lat', $vars);
+                                $reasonName = Strings::getParamValueIn('create_proposition', 'param_reason', $vars);
                                 $proposition = $proposalsManager->createReplaceProposal($timestamp, $placeName, $placeLon, $placeLat, $reasonName);
                                 $this->requestProcessor->getOutputter()->printProposition($proposition);
                                 break;
@@ -107,31 +111,35 @@ class AppointmentRequestManager
     }
 
     private function createAppointment(array $vars): int {
-        $timestamp = strtotime($vars[Strings::getReqParam('create_appointment', 'param_timestamp')]);
-        $place = $vars[Strings::getReqParam('create_appointment', 'param_place')];
-        $coords = array(
-            "lat" => $vars[Strings::getReqParam('create_appointment', 'param_coords_la')],
-            "lon" => $vars[Strings::getReqParam('create_appointment', 'param_coords_lo')]
-        );
-        $reason = $vars[Strings::getReqParam('create_appointment', 'param_reason')];
-        $name = $vars[Strings::getReqParam('create_appointment', 'param_name')];
-        $description = $vars[Strings::getReqParam('create_appointment', 'param_description')];
-        $closed = $vars[Strings::getReqParam('create_appointment', 'param_closed')];
-        $type = $vars[Strings::getReqParam('create_appointment', 'param_type')];
+        $timestamp = DateTime::createFromFormat('Y-m-d H:i:s', Strings::getParamValueIn('create_appointment', 'param_timestamp', $vars))->getTimestamp();
+        $place = Strings::getParamValueIn('create_appointment', 'param_place', $vars);
+        $coordlat = (double)Strings::getParamValueIn('create_appointment', 'param_coords_lat', $vars);
+        $coordlon = (double)Strings::getParamValueIn('create_appointment', 'param_coords_lon', $vars);
+        $reason = Strings::getParamValueIn('create_appointment', 'param_reason', $vars);
+        $name = Strings::getParamValueIn('create_appointment', 'param_name', $vars);
+        $description = Strings::getParamValueIn('create_appointment', 'param_description', $vars);
+        $closed = Strings::getParamValueIn('create_appointment', 'param_closed', $vars);
+        $type = Strings::getParamValueIn('create_appointment', 'param_type', $vars);
         $users = preg_split(
             '/,/',
-            $vars[Strings::getReqParam('create_appointment', 'param_invited_users')]);
+            Strings::getParamValueIn('create_appointment', 'param_invited_users', $vars));
 
-        $initial_proposition = DAOFactory::getInstance()->obtainPropositionsDAO()->createProposition(
-            0, $timestamp, $place, $coords, $reason, $this->user->getId());
+        $initial_proposition = new PropositionTO(0, $timestamp, $coordlat, $coordlon, $place, $reason, false, $this->user->getId());
 
         return DAOFactory::getInstance()->obtainAppointmentsDAO()->createAppointment(
             $name, $description, $closed, $type, $this->user->getId(), $users, $initial_proposition);
     }
 
-    private function closeAppointment(AppointmentTO $appointment): void {
+    private function closeAppointment(AppointmentTO $appointment) {
         if (!$appointment->isClosed()) {
             $appointment->close();
+            $appointment->synchronize();
+        }
+    }
+
+    private function openAppointment(AppointmentTO $appointment) {
+        if ($appointment->isClosed()) {
+            $appointment->open();
             $appointment->synchronize();
         }
     }

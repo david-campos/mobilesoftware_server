@@ -15,12 +15,14 @@ class MysqliSessionsDAO extends MysqliDAO implements ISessionsDAO
         static::$link->begin_transaction();
 
         $now = date('Y-m-d H:i:s');
+
         $stmt = static::$link->prepare('INSERT INTO `Sessions`(`user`, `session_key`, `initial_timestamp`)
                                         VALUES(
                                           (
                                             SELECT `_id` FROM `Users` WHERE `phone`=? LIMIT 1
                                           ),?,?)');
         $stmt->bind_param('sss', $phone, $key, $now);
+
         $stmt->execute();
         $id = $stmt->insert_id;
         $stmt->close();
@@ -49,7 +51,7 @@ class MysqliSessionsDAO extends MysqliDAO implements ISessionsDAO
         return $key;
     }
 
-    public function closeSession(int $id): void {
+    public function closeSession(int $id) {
         static::$link->begin_transaction();
 
         $now = date('Y-m-d H:i:s');

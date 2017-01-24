@@ -9,6 +9,9 @@
 namespace model;
 
 
+use DateTime;
+use exceptions\UnableToGetTOException;
+
 class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
 {
     public function obtainPropositionTO(int $appointmentId, int $timestamp, string $placeName): PropositionTO {
@@ -20,9 +23,15 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
                                       FROM `Propositions` WHERE `appointment`=? AND `timestamp` = ? AND `placeName`=?
                                       LIMIT 1');
         $stmt->bind_param('iss', $appointmentId, $time, $placeName);
+        $appid = $appointmentId;
+        $place = $placeName;
+        $timecpy = $time;
         $stmt->execute();
         $stmt->bind_result($appointmentId, $time, $placeLat, $placeLon, $placeName, $proposer, $reason);
-        $stmt->fetch();
+        if (!$stmt->fetch()) {
+            $stmt->close();
+            throw new UnableToGetTOException("The requested PropositionTO doesn't exist (appointment=$appid,time=$timecpy,placeName=$place)");
+        }
         $stmt->close();
 
         $stmt = static::$link->prepare('SELECT `name`, `description` FROM `Reasons` WHERE `name`=? LIMIT 1');
@@ -43,6 +52,9 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
 
         static::$link->begin_transaction();
 
+        $appid = $appointmentId;
+        $place = $placeName;
+
         $stmt = static::$link->prepare('INSERT INTO `Propositions`(`appointment`,`timestamp`,`placeLat`,`placeLon`,
                                               `placeName`,`proposer`,`reason`) VALUES(?,?,?,?,?,?,?)');
         $stmt->bind_param('isddsis', $appointmentId, $time, $coordinates['lat'], $coordinates['lon'], $placeName, $proposer, $reasonName);
@@ -50,8 +62,8 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         $stmt->close();
 
         static::$link->commit();
-
-        return $this->obtainPropositionTO($appointmentId, $timestamp, $placeName);
+        //die("Appid($appid) Place($place) ".gettype($appid)." ".gettype($place));
+        return $this->obtainPropositionTO($appid, $timestamp, $place);
     }
 
     /**
@@ -63,24 +75,16 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
 
         $returnPropositions = array();
 
-        $stmt = static::$link->prepare('SELECT `appointment`,`timestamp`,`placeLat`,`placeLon`,`placeName`,`proposer`,`reason`
-                                      FROM `Propositions` WHERE `appointment`=?
-                                      LIMIT 1');
+        $stmt = static::$link->prepare('SELECT p.`appointment`,p.`timestamp`,p.`placeLat`,p.`placeLon`,p.`placeName`,p.`proposer`,p.`reason`,r.`description`
+                                      FROM `Propositions` p LEFT JOIN `Reasons` r ON p.`reason` = r.`name` WHERE p.`appointment`=?');
         $stmt->bind_param('i', $appointmentId);
         $stmt->execute();
-        $stmt->bind_result($appointmentId, $time, $placeLat, $placeLon, $placeName, $proposer, $reason);
+        $stmt->bind_result($appointmentId, $time, $placeLat, $placeLon, $placeName, $proposer, $reason, $reasonDescription);
         while ($stmt->fetch()) {
-            $timestamp = strtotime($time);
-
-            $stmt2 = static::$link->prepare('SELECT `name`, `description` FROM `Reasons` WHERE `name`=? LIMIT 1');
-            $stmt2->bind_param('s', $reason);
-            $stmt2->execute();
-            $stmt2->bind_result($reasonName, $reasonDescription);
-            $stmt2->fetch();
-            $stmt2->close();
+            $timestamp = DateTime::createFromFormat('Y-m-d H:i:s', $time)->getTimestamp();
 
             $returnPropositions[] = new PropositionTO($appointmentId, $timestamp, $placeLat, $placeLon, $placeName,
-                $reasonName, $reasonDescription, $proposer);
+                $reason, $reasonDescription, $proposer);
         }
         $stmt->close();
 
@@ -89,7 +93,7 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         return $returnPropositions;
     }
 
-    function deleteProposition(PropositionTO $proposition): void {
+    function deleteProposition(PropositionTO $proposition) {
         static::$link->begin_transaction();
 
         $app = $proposition->getAppointmentId();

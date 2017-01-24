@@ -36,11 +36,12 @@ class AppointmentProposalsManager
         $this->appointment = $appointment;
     }
 
-    public function changeCurrentProposal($placeName, $timestamp): void {
+    public function changeCurrentProposal($placeName, $timestamp) {
         $proposals = $this->getProposals();
         foreach ($proposals as $prop) {
             if ($prop->getPlaceName() === $placeName && $prop->getTimestamp() === $timestamp) {
                 $this->appointment->setCurrentProposition($prop);
+                $this->appointment->synchronize();
                 return;
             }
         }
@@ -56,16 +57,30 @@ class AppointmentProposalsManager
             ->obtainPropositionsForAppointment($this->appointment->getId());
     }
 
-    public function createReplaceProposal($timestamp, $placeName, $placeLon, $placeLat, $reasonName) {
+    public function createReplaceProposal($timestamp, $placeName, $placeLon, $placeLat, $reasonName): PropositionTO {
         $proposals = $this->getProposals();
+        $proposalToErase = null;
         foreach ($proposals as $prop) {
             if ($prop->getProposer() === $this->appointmentManager->getUserTO()->getId()) {
-                DAOFactory::getInstance()->obtainPropositionsDAO()->deleteProposition($prop);
+                $proposalToErase = $prop;
                 break;
             }
         }
         $coords = array('lat' => $placeLat, 'lon' => $placeLon);
-        DAOFactory::getInstance()->obtainPropositionsDAO()->createProposition(
+        $newProp = DAOFactory::getInstance()->obtainPropositionsDAO()->createProposition(
             $this->appointment->getId(), $timestamp, $placeName, $coords, $reasonName, $this->appointmentManager->getUserTO()->getId());
+
+        // If it is the current proposal then exchange them first
+        if ($proposalToErase) {
+            if ($this->appointment->getCurrentProposition()->getTimestamp() === $proposalToErase->getTimestamp() &&
+                $this->appointment->getCurrentProposition()->getPlaceName() === $proposalToErase->getPlaceName()
+            ) {
+                $this->appointment->setCurrentProposition($newProp);
+                $this->appointment->synchronize();
+            }
+            DAOFactory::getInstance()->obtainPropositionsDAO()->deleteProposition($proposalToErase);
+        }
+
+        return $newProp;
     }
 }

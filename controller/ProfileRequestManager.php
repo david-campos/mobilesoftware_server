@@ -31,15 +31,14 @@ class ProfileRequestManager
         $this->userTO = $to;
     }
 
-    public function processProfileRequest(array $vars): void {
-        $gen = Strings::getConstants()['general_params'];
-        $req_name = $vars[$gen['request']];
+    public function processProfileRequest(array $vars) {
+        $req_name = Strings::getGenParamValueIn('request', $vars);
         switch ($req_name) {
             case Strings::getReqName('block_user'):
-                $this->blockUser($vars[Strings::getReqParam('block_user', 'param_blocked_phone')]);
+                $this->blockUser(Strings::getParamValueIn('block_user', 'param_blocked_phone', $vars));
                 break;
             case Strings::getReqName('change_user_name'):
-                $this->changeUsername($vars[Strings::getReqParam('change_user_name', 'param_name')]);
+                $this->changeUsername(Strings::getParamValueIn('change_user_name', 'param_name', $vars));
                 break;
             case Strings::getReqName('change_profile_pic'):
                 $this->changeProfilePicture();
@@ -50,11 +49,13 @@ class ProfileRequestManager
             default:
                 throw new WrongRequestException("The request '$req_name' is not a profile request.");
         }
+        // Synchronize to DB
         $this->userTO->synchronize();
+        // Print
         $this->requestProcessor->getOutputter()->printUserTO($this->userTO);
     }
 
-    private function blockUser(string $userPhone): void {
+    private function blockUser(string $userPhone) {
         $blockedGuy = DAOFactory::getInstance()->obtainUsersDAO()->obtainUserTO($userPhone);
         if ($blockedGuy !== null) {
             $this->userTO->addBlockedId($blockedGuy->getId());
@@ -62,7 +63,7 @@ class ProfileRequestManager
             throw new IllegalArgumentException('The id of the user to block doesn\'t exist');
     }
 
-    private function changeUsername(string $userName): void {
+    private function changeUsername(string $userName) {
         if ($userName !== '' && $userName !== null) {
             $this->userTO->setName($userName);
         } else

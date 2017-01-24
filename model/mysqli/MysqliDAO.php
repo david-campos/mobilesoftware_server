@@ -13,14 +13,18 @@ abstract class MysqliDAO
     private static $instances = 0;
 
     function __construct() {
-        if (static::$link)
+        if (!static::$link) {
+            mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
             static::$link = new mysqli(MYSQLI_HOST, MYSQLI_USER, MYSQLI_PASS, MYSQLI_DB);
-        static::$instances++;
+        }
+        self::$instances++;
     }
 
     function __destruct() {
-        static::$instances--;
-        if (static::$instances < 1 && static::$link)
+        self::$instances--;
+        if (self::$instances < 1 && static::$link) {
             static::$link->close();
+            static::$link = null;
+        }
     }
 }

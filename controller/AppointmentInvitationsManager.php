@@ -8,7 +8,6 @@
 
 namespace controller;
 
-
 use model\AppointmentTO;
 
 class AppointmentInvitationsManager

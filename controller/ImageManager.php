@@ -18,12 +18,12 @@ class ImageManager
      * Directory where the images are saved, to be safe the images should be saved in another
      * server, but by now we will leave it this way.
      */
-    public static const IMAGE_DIR = '/../public_html/profile_pics/';
-    public static const IMAGE_IDX_FILE = 'idx.txt';
-    public static const IMAGE_LOG_FILE = 'log.txt';
-    public static const IMAGE_EXTENSIONS = 'png,jpg,jpeg';
-    public static const IMAGE_EXTENSIONS_PATTERN = '/^(png|jpg|jpeg)$/i';
-    public static const FIELD_NAME = "picture";
+    const IMAGE_DIR = '/../public_html/profile_pics/';
+    const IMAGE_IDX_FILE = 'idx.txt';
+    const IMAGE_LOG_FILE = 'log.txt';
+    const IMAGE_EXTENSIONS = 'png,jpg,jpeg';
+    const IMAGE_EXTENSIONS_PATTERN = '/^(png|jpg|jpeg)$/i';
+    const FIELD_NAME = "picture";
 
     public function saveUploadedImage(): int {
         $extension = $this->getImageExtension();

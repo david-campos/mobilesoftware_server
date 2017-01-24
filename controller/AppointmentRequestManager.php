@@ -8,6 +8,9 @@
 
 namespace controller;
 
+require_once dirname(__FILE__) . '/controller_exceptions/WrongRequestException.php';
+require_once dirname(__FILE__) . '/AppointmentInvitationsManager.php';
+require_once dirname(__FILE__) . '/AppointmentProposalsManager.php';
 
 use exceptions\WrongRequestException;
 use model\AppointmentTO;

@@ -8,6 +8,8 @@
 
 namespace model;
 
+require_once dirname(__FILE__) . '/model_exceptions/NotUpdatedDescriptionException.php';
+
 use exceptions\IllegalArgumentException;
 use exceptions\NotUpdatedDescriptionException;
 

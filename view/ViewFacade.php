@@ -8,6 +8,8 @@
 
 namespace view;
 
+require_once dirname(__FILE__) . '/Outputter.php';
+require_once dirname(__FILE__) . '/OutputterJSON.php';
 
 class ViewFacade
 {

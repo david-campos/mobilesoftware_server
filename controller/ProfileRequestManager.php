@@ -8,6 +8,8 @@
 
 namespace controller;
 
+require_once dirname(__FILE__) . '/ImageManager.php';
+
 use exceptions\IllegalArgumentException;
 use exceptions\WrongRequestException;
 use model\DAOFactory;

@@ -13,8 +13,8 @@ use model\DAOFactory;
 
 class SessionManager
 {
-    public static const KEY_KEY = "key";
-    public static const KEY_ID = "id";
+    const KEY_KEY = "key";
+    const KEY_ID = "id";
 
     public function login(string $phone): array {
         DAOFactory::getInstance()->obtainSessionsDAO()->createNewSession($phone);

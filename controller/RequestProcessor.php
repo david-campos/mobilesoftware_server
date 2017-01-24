@@ -8,6 +8,16 @@
 
 namespace controller;
 
+// Require the view
+require_once dirname(__FILE__) . '/../view/ViewFacade.php';
+// Require the model
+require_once dirname(__FILE__) . '/../model/DAOFactory.php';
+// Require controller stuff
+require_once dirname(__FILE__) . '/AppointmentRequestManager.php';
+require_once dirname(__FILE__) . '/ProfileRequestManager.php';
+require_once dirname(__FILE__) . '/SessionManager.php';
+require_once dirname(__FILE__) . '/Strings.php';
+
 use model\DAOFactory;
 use view\ViewFacade;
 

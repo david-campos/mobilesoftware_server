@@ -6,6 +6,29 @@
 
 namespace model;
 
+require_once dirname(__FILE__) . '/AbstractTO.php';
+require_once dirname(__FILE__) . '/AppointmentTO.php';
+require_once dirname(__FILE__) . '/Invitation.php';
+require_once dirname(__FILE__) . '/PropositionTO.php';
+require_once dirname(__FILE__) . '/UserTO.php';
+
+require_once dirname(__FILE__) . '/IAppointmentsDAO.php';
+require_once dirname(__FILE__) . '/IInvitationsUpdater.php';
+require_once dirname(__FILE__) . '/IPropositionsDAO.php';
+require_once dirname(__FILE__) . '/ISessionsDAO.php';
+require_once dirname(__FILE__) . '/ISyncDAO.php';
+require_once dirname(__FILE__) . '/ITypesAndReasonsDAO.php';
+require_once dirname(__FILE__) . '/IUsersDAO.php';
+require_once dirname(__FILE__) . '/SessionsDAO.php';
+
+require_once dirname(__FILE__) . '/mysqli/MysqliDAO.php';
+require_once dirname(__FILE__) . '/mysqli/MysqliAppointmentsDAO.php';
+require_once dirname(__FILE__) . '/mysqli/MysqliConfiguration.php';
+require_once dirname(__FILE__) . '/mysqli/MysqliPropositionsDAO.php';
+require_once dirname(__FILE__) . '/mysqli/MysqliSessionsDAO.php';
+require_once dirname(__FILE__) . '/mysqli/MysqliTypesAndReasonsDAO.php';
+require_once dirname(__FILE__) . '/mysqli/MysqliUsersDAO.php';
+
 /**
  * Abstract class DAOFactory, factory for all the DAO's
  * @package model

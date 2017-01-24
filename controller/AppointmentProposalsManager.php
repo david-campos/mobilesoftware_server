@@ -8,6 +8,7 @@
 
 namespace controller;
 
+require_once dirname(__FILE__) . '/controller_exceptions/PropositionNotFoundException.php';
 
 use exceptions\PropositionNotFoundException;
 use model\AppointmentTO;

@@ -3,6 +3,8 @@
 -- 31/12/2016
 -- This script creates the database for the server in MySQL.
 
+START TRANSACTION;
+
 -- Table Users
 -- Saves the data of the users that use the app
 CREATE TABLE `Users` (
@@ -97,7 +99,7 @@ ALTER TABLE `Propositions` ADD CONSTRAINT fk_appointment
 CREATE TABLE `InvitedTo` (
 	`user`        INT                                     NOT NULL,
 	`appointment` INT                                     NOT NULL,
-	`state`       ENUM ('pending', 'accepted', 'refused') NOT NULL DEFAULT 1,
+	`state`       ENUM ('pending', 'accepted', 'refused') NOT NULL DEFAULT 'pending',
 	`reason`      VARCHAR(50)                                      DEFAULT NULL,
 	FOREIGN KEY (`user`) REFERENCES `Users`(`_id`)
 		ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -112,9 +114,11 @@ CREATE TABLE `InvitedTo` (
 -- Saves the information about the current and past sessions the moviles
 -- initiated in the server.
 CREATE TABLE `Sessions` (
-	`_id` INT NOT NULL AUTO_INCREMENT,
-	`session_key` CHAR(128) NOT NULL,
+	`_id`               INT NOT NULL AUTO_INCREMENT,
+	`session_key`       CHAR(128) NOT NULL,
 	`initial_timestamp` TIMESTAMP NOT NULL,
-	`final_timestamp` TIMESTAMP DEFAULT NULL,
+	`final_timestamp`   TIMESTAMP    DEFAULT '0000-00-00 00:00:00',
 	PRIMARY KEY (`_id`)
 );
+
+COMMIT;

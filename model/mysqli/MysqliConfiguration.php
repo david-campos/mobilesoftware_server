@@ -1,7 +1,7 @@
 <?php
 namespace model;
 
-const MYSQLI_HOST = 'localhos';
-const MYSQLI_USER = 'user';
-const MYSQLI_PASS = 'password';
-const MYSQLI_DB = 'database';
+const MYSQLI_HOST = 'localhost';
+const MYSQLI_USER = 'mobilesoftware';
+const MYSQLI_PASS = 'mobilesoftware';
+const MYSQLI_DB = 'mobilesoftware';

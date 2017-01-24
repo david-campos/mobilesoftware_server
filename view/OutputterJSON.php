@@ -16,6 +16,8 @@ use model\UserTO;
 class OutputterJSON implements Outputter
 {
     private function safe_json_encode_and_print(array $array) {
+        header('Content-Type: application/json;charset=utf-8');
+
         $json = json_encode($array);
         if ($json === false) {
             // Avoid echo of an empty string (invalid JSON)

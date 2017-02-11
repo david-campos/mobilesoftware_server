@@ -6,6 +6,10 @@
     "get_appointment_types_and_reasons": {
       "name": "tar"
     },
+    "filter_user_list": {
+      "name": "ful",
+      "param_phones": "ps"
+    },
     "create_appointment": {
       "name": "nappo",
       "param_name": "n",

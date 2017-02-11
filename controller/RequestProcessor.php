@@ -19,6 +19,7 @@ require_once dirname(__FILE__) . '/SessionManager.php';
 require_once dirname(__FILE__) . '/Strings.php';
 
 use model\DAOFactory;
+use model\UserTO;
 use view\ViewFacade;
 
 class RequestProcessor
@@ -39,6 +40,10 @@ class RequestProcessor
             $types = $this->getAppointmentTypes();
             $reasons = $this->getAppointmentReasons();
             $this->opt->printApppointmentTypesAndReasons($types, $reasons);
+        } else if ($request_name === Strings::getReqName("filter_user_list")) {
+            $phones = explode(",", Strings::getParamValueIn("filter_user_list", "param_phones", $vars));
+            $users = $this->filterUsers($phones);
+            $this->opt->printUsers($users);
         } else {
             $session_manager = new SessionManager();
             $phone = Strings::getGenParamValueIn('phone', $vars);
@@ -68,6 +73,14 @@ class RequestProcessor
                 }
             }
         }
+    }
+
+    /**
+     * @param array $phones
+     * @return UserTO[]
+     */
+    private function filterUsers(array $phones): array {
+        return DAOFactory::getInstance()->obtainUsersDAO()->getExistentUsers($phones);
     }
 
     private function getAppointmentTypes(): array {

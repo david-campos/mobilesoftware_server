@@ -72,4 +72,43 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $stmt->close();
         static::$link->commit();
     }
+
+    /**
+     * @param string[] $phones
+     * @return UserTO[]
+     * @throws UnableToGetTOException
+     */
+    function getExistentUsers(array $phones): array {
+        static::$link->begin_transaction();
+        $stmt = static::$link->prepare('SELECT `_id`,`phone`,`name`,`picture_id` FROM `Users` WHERE `phone`=? LIMIT 1');
+        $stmt->bind_param('s', $phoneNumber);
+        $stmt->bind_result($id, $phone, $name, $picture_id);
+        $usersPre = array();
+        foreach ($phones as $phn) {
+            $phoneNumber = $phn;
+            $stmt->execute();
+            if ($stmt->fetch()) {
+                $usersPre[] = array($id, $phone, $name, $picture_id);
+            }
+        }
+        $stmt->close();
+
+        $stmt = static::$link->prepare('SELECT `blocked` FROM `Blocked` WHERE `blocker`=?');
+        $stmt->bind_param('i', $id);
+        $users = array();
+        $stmt->bind_result($blocked);
+        foreach ($usersPre as $user) {
+            $id = $user[0];
+            $stmt->execute();
+            $blockedIds = array();
+            while ($stmt->fetch()) {
+                $blockedIds[] = $blocked;
+            }
+            $users[] = new UserTO($user[0], $user[1], $user[2], $user[3], $blockedIds, $this);
+        }
+        $stmt->close();
+        static::$link->commit();
+
+        return $users;
+    }
 }

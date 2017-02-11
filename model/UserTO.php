@@ -22,14 +22,16 @@ class UserTO extends AbstractTO
         $this->blocked_ids = $blockedIds;
     }
 
-    public function toAssociativeArray(): array {
-        return array(
+    public function toAssociativeArray(bool $withBlockedOnes): array {
+        $array = array(
             "id" => $this->getId(),
             "name" => $this->getName(),
             "phone" => $this->getPhone(),
-            "picture_id" => $this->getPictureId(),
-            "blocked_ids" => $this->getBlockedIds()
-        );
+            "picture_id" => $this->getPictureId());
+        if ($withBlockedOnes) {
+            $array["blocked_ids"] = $this->getBlockedIds();
+        }
+        return $array;
     }
 
     public function getPhone(): string {

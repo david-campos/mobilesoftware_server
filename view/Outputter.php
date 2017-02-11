@@ -17,6 +17,8 @@ interface Outputter
 {
     public function printUserTO(UserTO $userTO);
 
+    public function printUsers(array $usersToList);
+
     public function printAppointmentList(array $appointmentToList);
 
     public function printAppointment(AppointmentTO $appointmentTO);

@@ -53,7 +53,7 @@ class OutputterJSON implements Outputter
     }
 
     public function printUserTO(UserTO $userTO) {
-        $this->safe_json_encode_and_print($userTO->toAssociativeArray());
+        $this->safe_json_encode_and_print($userTO->toAssociativeArray(true));
     }
 
     /**
@@ -106,5 +106,16 @@ class OutputterJSON implements Outputter
             "appointmentTypes" => $appointmentTypes,
             "reasons" => $reasons
         ));
+    }
+
+    /**
+     * @param UserTO[] $usersToList
+     */
+    public function printUsers(array $usersToList) {
+        $users = array();
+        foreach ($usersToList as $usr) {
+            $users[] = $usr->toAssociativeArray(false);
+        }
+        $this->safe_json_encode_and_print($users);
     }
 }

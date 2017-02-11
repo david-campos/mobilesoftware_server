@@ -46,8 +46,17 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         return new PropositionTO($appointmentId, $timestamp, $placeLat, $placeLon, $placeName, $reasonName, $reasonDescription, $proposer);
     }
 
+    /**
+     * @param int $appointmentId
+     * @param int $timestamp
+     * @param string $placeName
+     * @param array $coordinates
+     * @param string|null $reasonName
+     * @param int $proposer
+     * @return PropositionTO
+     */
     public function createProposition(int $appointmentId, int $timestamp, string $placeName, array $coordinates,
-                                      string $reasonName, int $proposer): PropositionTO {
+                                      $reasonName, int $proposer): PropositionTO {
         $time = date('Y-m-d H:i:s', $timestamp);
 
         static::$link->begin_transaction();

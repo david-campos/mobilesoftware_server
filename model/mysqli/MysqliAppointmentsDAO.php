@@ -75,6 +75,23 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $id = $stmt->insert_id;
         $stmt->close();
 
+        // Check invited users that blocked the creator and remove them from the list
+        $stmtBlocked = static::$link->prepare('SELECT b.`blocked` FROM `Blocked` b JOIN `Users` u ON(b.`blocker`=u.`_id`)
+                                            WHERE u.`phone`=? AND b.`blocked`=? LIMIT 1');
+        $stmtBlocked->bind_param('ii', $blocker, $blocked);
+        $times = 0;
+        for ($idx = 0; $idx < count($invitedUsers); $idx++) {
+            $blocker = $invitedUsers[$idx];
+            $blocked = $creatorId;
+            $stmtBlocked->execute();
+            $stmtBlocked->store_result();
+            if ($stmtBlocked->num_rows > 0) {
+                array_splice($invitedUsers, $idx, 1);
+                $idx--; // To avoid jumping the next one
+            }
+        }
+        $stmtBlocked->close();
+
         // Inserting invitations
         $stmtInvitation = static::$link->prepare('INSERT INTO `InvitedTo`(`user`,`appointment`)
                                                   VALUES ((SELECT `_id` FROM `Users` WHERE `phone`=? LIMIT 1), ?)');

@@ -13,6 +13,7 @@ require_once dirname(__FILE__) . '/AppointmentInvitationsManager.php';
 require_once dirname(__FILE__) . '/AppointmentProposalsManager.php';
 
 use DateTime;
+use exceptions\RequiredParameterException;
 use exceptions\WrongRequestException;
 use model\AppointmentTO;
 use model\DAOFactory;
@@ -115,7 +116,11 @@ class AppointmentRequestManager
         $place = Strings::getParamValueIn('create_appointment', 'param_place', $vars);
         $coordlat = (double)Strings::getParamValueIn('create_appointment', 'param_coords_lat', $vars);
         $coordlon = (double)Strings::getParamValueIn('create_appointment', 'param_coords_lon', $vars);
-        $reason = Strings::getParamValueIn('create_appointment', 'param_reason', $vars);
+        try {
+            $reason = Strings::getParamValueIn('create_appointment', 'param_reason', $vars);
+        } catch (RequiredParameterException $e) {
+            $reason = null;
+        }
         $name = Strings::getParamValueIn('create_appointment', 'param_name', $vars);
         $description = Strings::getParamValueIn('create_appointment', 'param_description', $vars);
         $closed = Strings::getParamValueIn('create_appointment', 'param_closed', $vars);

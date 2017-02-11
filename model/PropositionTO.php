@@ -31,7 +31,7 @@ class PropositionTO
      * @param int $proposer
      * @internal param $coordinates
      */
-    public function __construct(int $appointment, int $time, float $coordLat, float $coordLon, string $placeName, string $reasonName,
+    public function __construct(int $appointment, int $time, float $coordLat, float $coordLon, string $placeName, $reasonName,
                                 $reasonDescription, int $proposer) {
         $this->time = $time;
         $this->coordinates = array('lat' => $coordLat, 'lon' => $coordLon);
@@ -66,11 +66,14 @@ class PropositionTO
         return $this->placeName;
     }
 
-    public function getReasonName(): string {
+    /**
+     * @return string|null
+     */
+    public function getReasonName() {
         return $this->reasonName;
     }
 
-    public function getReasonDescription(): string {
+    public function getReasonDescription() {
         return $this->reasonDescription;
     }
 

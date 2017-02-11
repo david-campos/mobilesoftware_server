@@ -20,7 +20,7 @@ interface IPropositionsDAO
     function obtainPropositionsForAppointment(int $appointmentId): array;
 
     function createProposition(int $appointmentId, int $timestamp, string $placeName, array $coordinates,
-                               string $reasonName, int $proposer): PropositionTO;
+                               $reasonName, int $proposer): PropositionTO;
 
     function deleteProposition(PropositionTO $proposition);
 }

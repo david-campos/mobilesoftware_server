@@ -46,6 +46,16 @@ class ProfileRequestManager
             case Strings::getReqName('remove_profile_pic'):
                 $this->removeProfilePicture();
                 break;
+            case Strings::getReqName("filter_user_list"):
+                $phones = explode(",", Strings::getParamValueIn("filter_user_list", "param_phones", $vars));
+                $users = $this->filterUsers($phones);
+                $usersArray = array();
+                foreach ($users as $usr) {
+                    $blocked = in_array($usr->getId(), $this->userTO->getBlockedIds());
+                    $usersArray[] = array("blocked" => $blocked, "user" => $usr);
+                }
+                $this->requestProcessor->getOutputter()->printUsers($usersArray);
+                return; //Not out
             default:
                 throw new WrongRequestException("The request '$req_name' is not a profile request.");
         }
@@ -80,5 +90,13 @@ class ProfileRequestManager
 
     private function removeProfilePicture() {
         $this->userTO->setPictureId(0);
+    }
+
+    /**
+     * @param array $phones
+     * @return UserTO[]
+     */
+    private function filterUsers(array $phones): array {
+        return DAOFactory::getInstance()->obtainUsersDAO()->getExistentUsers($phones);
     }
 }

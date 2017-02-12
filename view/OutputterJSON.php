@@ -109,12 +109,14 @@ class OutputterJSON implements Outputter
     }
 
     /**
-     * @param UserTO[] $usersToList
+     * @param array(blocked=>bool,user=>UserTO) $usersList
      */
-    public function printUsers(array $usersToList) {
+    public function printUsers(array $usersList) {
         $users = array();
-        foreach ($usersToList as $usr) {
-            $users[] = $usr->toAssociativeArray(false);
+        foreach ($usersList as $mix) {
+            $user = ($mix["user"])->toAssociativeArray();
+            $user["blocked"] = $mix["blocked"];
+            $users[] = $user;
         }
         $this->safe_json_encode_and_print($users);
     }

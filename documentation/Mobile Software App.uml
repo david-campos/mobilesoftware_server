@@ -1911,8 +1911,8 @@ getSessionKey and closeSession) only delegate
 <XPD:ATTR name="FillColor" type="string">clSkyBlue</XPD:ATTR>
 <XPD:ATTR name="Left" type="integer">200</XPD:ATTR>
 <XPD:ATTR name="Top" type="integer">340</XPD:ATTR>
-<XPD:ATTR name="Width" type="integer">187</XPD:ATTR>
-<XPD:ATTR name="Height" type="integer">85</XPD:ATTR>
+<XPD:ATTR name="Width" type="integer">194</XPD:ATTR>
+<XPD:ATTR name="Height" type="integer">98</XPD:ATTR>
 <XPD:REF name="Model">uhvAJ++UwEKfAsF90CpJagAA</XPD:REF>
 <XPD:OBJ name="NameCompartment" type="UMLNameCompartmentView" guid="qSed4aGJYkC4AkDhZKrl6QAA">
 <XPD:OBJ name="NameLabel" type="LabelView" guid="0yl1lOy4QEiD9923zuHZlwAA">
@@ -2136,7 +2136,7 @@ getSessionKey and closeSession) only delegate
 <XPD:ATTR name="LineColor" type="string">clNavy</XPD:ATTR>
 <XPD:ATTR name="FillColor" type="string">clSkyBlue</XPD:ATTR>
 <XPD:ATTR name="LineStyle" type="LineStyleKind">lsRectilinear</XPD:ATTR>
-<XPD:ATTR name="Points" type="Points">294,424;294,512</XPD:ATTR>
+<XPD:ATTR name="Points" type="Points">294,437;294,512</XPD:ATTR>
 <XPD:REF name="Model">zMad5zFdg0m2EgdNV+u0CgAA</XPD:REF>
 <XPD:REF name="Head">Ejtff2HieUOVQOVL8lnMcAAA</XPD:REF>
 <XPD:REF name="Tail">mCLc19zykkOSrOyN9+5XcgAA</XPD:REF>
@@ -2668,7 +2668,7 @@ getSessionKey and closeSession) only delegate
 <XPD:OBJ name="OwnedViews[16]" type="UMLDependencyView" guid="QvUdMBnFdUSqCmv/2eBuVQAA">
 <XPD:ATTR name="LineColor" type="string">clNavy</XPD:ATTR>
 <XPD:ATTR name="FillColor" type="string">clSkyBlue</XPD:ATTR>
-<XPD:ATTR name="Points" type="Points">521,176;339,340</XPD:ATTR>
+<XPD:ATTR name="Points" type="Points">523,176;347,340</XPD:ATTR>
 <XPD:REF name="Model">zjpGCSnhXE26DuSuGrDilwAA</XPD:REF>
 <XPD:REF name="Head">mCLc19zykkOSrOyN9+5XcgAA</XPD:REF>
 <XPD:REF name="Tail">jsVvtxtmREeLC0ByDoOAYAAA</XPD:REF>
@@ -4698,7 +4698,7 @@ getSessionKey and closeSession) only delegate
 <XPD:REF name="ClientDependencies[0]">zjpGCSnhXE26DuSuGrDilwAA</XPD:REF>
 <XPD:REF name="ClientDependencies[1]">RKs7ay8U/EyF7BIViLtpJAAA</XPD:REF>
 <XPD:REF name="ClientDependencies[2]">69JIdkxsy0mmCBky41aFegAA</XPD:REF>
-<XPD:ATTR name="#Operations" type="integer">4</XPD:ATTR>
+<XPD:ATTR name="#Operations" type="integer">3</XPD:ATTR>
 <XPD:OBJ name="Operations[0]" type="UMLOperation" guid="VMzSEmO1HEadaIJeHsIh0QAA">
 <XPD:ATTR name="Name" type="string">processRequest</XPD:ATTR>
 <XPD:REF name="Owner">rJetEjA1Yk6mBeXsJnHgagAA</XPD:REF>
@@ -4718,22 +4718,6 @@ getSessionKey and closeSession) only delegate
 <XPD:ATTR name="Name" type="string">getAppointmentReasons</XPD:ATTR>
 <XPD:ATTR name="Visibility" type="UMLVisibilityKind">vkPrivate</XPD:ATTR>
 <XPD:REF name="Owner">rJetEjA1Yk6mBeXsJnHgagAA</XPD:REF>
-</XPD:OBJ>
-<XPD:OBJ name="Operations[3]" type="UMLOperation" guid="IPG3+1MP8UWZXgHaqo0gFAAA">
-<XPD:ATTR name="Name" type="string">filterUsers</XPD:ATTR>
-<XPD:ATTR name="Visibility" type="UMLVisibilityKind">vkPrivate</XPD:ATTR>
-<XPD:REF name="Owner">rJetEjA1Yk6mBeXsJnHgagAA</XPD:REF>
-<XPD:ATTR name="#Parameters" type="integer">2</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="RKAGu9SMWkO9bfH5n3/1ewAA">
-<XPD:ATTR name="DirectionKind" type="UMLParameterDirectionKind">pdkReturn</XPD:ATTR>
-<XPD:ATTR name="TypeExpression" type="string">UserTO[]</XPD:ATTR>
-<XPD:REF name="BehavioralFeature">IPG3+1MP8UWZXgHaqo0gFAAA</XPD:REF>
-</XPD:OBJ>
-<XPD:OBJ name="Parameters[1]" type="UMLParameter" guid="uxrovenehEmYs0+o4yhyYQAA">
-<XPD:ATTR name="Name" type="string">phone</XPD:ATTR>
-<XPD:ATTR name="TypeExpression" type="string">string[]</XPD:ATTR>
-<XPD:REF name="BehavioralFeature">IPG3+1MP8UWZXgHaqo0gFAAA</XPD:REF>
-</XPD:OBJ>
 </XPD:OBJ>
 <XPD:ATTR name="#Associations" type="integer">2</XPD:ATTR>
 <XPD:REF name="Associations[0]">IPftQ51A7kiXl4BBlSPbcwAA</XPD:REF>
@@ -4773,7 +4757,7 @@ getSessionKey and closeSession) only delegate
 <XPD:REF name="ClientDependencies[0]">1+vHzMogb0CdTKbaCXnvSgAA</XPD:REF>
 <XPD:ATTR name="#SupplierDependencies" type="integer">1</XPD:ATTR>
 <XPD:REF name="SupplierDependencies[0]">zjpGCSnhXE26DuSuGrDilwAA</XPD:REF>
-<XPD:ATTR name="#Operations" type="integer">4</XPD:ATTR>
+<XPD:ATTR name="#Operations" type="integer">5</XPD:ATTR>
 <XPD:OBJ name="Operations[0]" type="UMLOperation" guid="ArZ7F6meuEeiFWWSPP40LgAA">
 <XPD:ATTR name="Name" type="string">processProfileRequest</XPD:ATTR>
 <XPD:REF name="Owner">uhvAJ++UwEKfAsF90CpJagAA</XPD:REF>
@@ -4810,6 +4794,22 @@ getSessionKey and closeSession) only delegate
 <XPD:ATTR name="Name" type="string">changeProfilePicture</XPD:ATTR>
 <XPD:ATTR name="Visibility" type="UMLVisibilityKind">vkPrivate</XPD:ATTR>
 <XPD:REF name="Owner">uhvAJ++UwEKfAsF90CpJagAA</XPD:REF>
+</XPD:OBJ>
+<XPD:OBJ name="Operations[4]" type="UMLOperation" guid="IPG3+1MP8UWZXgHaqo0gFAAA">
+<XPD:ATTR name="Name" type="string">filterUsers</XPD:ATTR>
+<XPD:ATTR name="Visibility" type="UMLVisibilityKind">vkPrivate</XPD:ATTR>
+<XPD:REF name="Owner">uhvAJ++UwEKfAsF90CpJagAA</XPD:REF>
+<XPD:ATTR name="#Parameters" type="integer">2</XPD:ATTR>
+<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="RKAGu9SMWkO9bfH5n3/1ewAA">
+<XPD:ATTR name="DirectionKind" type="UMLParameterDirectionKind">pdkReturn</XPD:ATTR>
+<XPD:ATTR name="TypeExpression" type="string">UserTO[]</XPD:ATTR>
+<XPD:REF name="BehavioralFeature">IPG3+1MP8UWZXgHaqo0gFAAA</XPD:REF>
+</XPD:OBJ>
+<XPD:OBJ name="Parameters[1]" type="UMLParameter" guid="uxrovenehEmYs0+o4yhyYQAA">
+<XPD:ATTR name="Name" type="string">phone</XPD:ATTR>
+<XPD:ATTR name="TypeExpression" type="string">string[]</XPD:ATTR>
+<XPD:REF name="BehavioralFeature">IPG3+1MP8UWZXgHaqo0gFAAA</XPD:REF>
+</XPD:OBJ>
 </XPD:OBJ>
 <XPD:ATTR name="#Associations" type="integer">2</XPD:ATTR>
 <XPD:REF name="Associations[0]">Nszwg8UCVUqVVwrrsYe4EgAA</XPD:REF>
@@ -5133,9 +5133,9 @@ getSessionKey and closeSession) only delegate
 <XPD:ATTR name="IsAbstract" type="boolean">True</XPD:ATTR>
 <XPD:REF name="Owner">IhyYwTXXIkCyc6JdBOdZFAAA</XPD:REF>
 <XPD:ATTR name="#Parameters" type="integer">1</XPD:ATTR>
-<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="UPYyoegxzku7LqaO/H8UKgAA">
+<XPD:OBJ name="Parameters[0]" type="UMLParameter" guid="8t/pP6IF/EacrL5H7nQJJgAA">
 <XPD:ATTR name="Name" type="string">users</XPD:ATTR>
-<XPD:ATTR name="TypeExpression" type="string">UserTO[]</XPD:ATTR>
+<XPD:ATTR name="TypeExpression" type="string">array</XPD:ATTR>
 <XPD:REF name="BehavioralFeature">eZv+j2yPa0ysZJWKNwSE6wAA</XPD:REF>
 </XPD:OBJ>
 </XPD:OBJ>

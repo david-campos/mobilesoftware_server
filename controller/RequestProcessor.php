@@ -56,6 +56,7 @@ class RequestProcessor
                         case Strings::getReqName("block_user"):
                         case Strings::getReqName("change_user_name"):
                         case Strings::getReqName("change_profile_pic"):
+                        case Strings::getReqName("filter_user_list"):
                         case Strings::getReqName("remove_profile_pic"):
                             (new ProfileRequestManager($userTO, $this))->processProfileRequest($vars);
                             break;

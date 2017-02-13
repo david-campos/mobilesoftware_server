@@ -22,6 +22,7 @@ class OutputterJSON implements Outputter
      */
     public function __construct() {
         $this->rustart = getrusage();
+        http_response_code(200);
     }
 
     // Script end
@@ -114,7 +115,7 @@ class OutputterJSON implements Outputter
     public function printUsers(array $usersList) {
         $users = array();
         foreach ($usersList as $mix) {
-            $user = ($mix["user"])->toAssociativeArray();
+            $user = ($mix["user"])->toAssociativeArray(false);
             $user["blocked"] = $mix["blocked"];
             $users[] = $user;
         }

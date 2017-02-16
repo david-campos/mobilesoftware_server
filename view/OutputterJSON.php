@@ -32,10 +32,16 @@ class OutputterJSON implements Outputter
     }
 
     private function safe_json_encode_and_print(array $array) {
+        $this->safe_json_encode_and_print_with_error($array, false);
+    }
+
+    private function safe_json_encode_and_print_with_error(array $array, bool $isError) {
         header('Content-Type: application/json;charset=utf-8');
 
         $ru = getrusage();
-        $wrap = array('result' => $array,
+        $wrap = array(
+            'status' => $isError ? 'error' : 'success',
+            'result' => $array,
             'permormance_info' => array(
                 'computationTime' => $this->rutime($ru, $this->rustart, "utime"),
                 'systemCallsTime' => $this->rutime($ru, $this->rustart, "stime")
@@ -88,11 +94,10 @@ class OutputterJSON implements Outputter
     }
 
     public function printError(string $errorString, int $errorCode) {
-        http_response_code(500);
-        $this->safe_json_encode_and_print(array(
+        $this->safe_json_encode_and_print_with_error(array(
             "error" => $errorString,
             "code" => $errorCode
-        ));
+        ), true);
     }
 
     public function printSessionKey(string $sessionKey, int $sessionId) {

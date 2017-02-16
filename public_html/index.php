@@ -10,7 +10,7 @@ $request_processor = new \controller\RequestProcessor();
 try {
     $request_processor->processRequest($_GET);
 } catch (Exception $e) {
-    $request_processor->getOutputter()->printError($e->getMessage() . PHP_EOL . $e->getTraceAsString(), $e->getCode());
+    $request_processor->getOutputter()->printError($e->getMessage() . "\n" . $e->getTraceAsString(), $e->getCode());
 } catch (Error $e) {
-    $request_processor->getOutputter()->printError($e->getMessage() . PHP_EOL . $e->getTraceAsString(), $e->getCode());
+    $request_processor->getOutputter()->printError($e->getMessage() . "\n" . $e->getTraceAsString(), $e->getCode());
 }

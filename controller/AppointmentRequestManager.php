@@ -114,7 +114,7 @@ class AppointmentRequestManager
                         $dateTime = DateTime::createFromFormat('Y-m-d H:i:s',
                             Strings::getParamValueIn('accept_proposition', 'param_timestamp', $vars), new \DateTimeZone('UTC'));
                         if ($dateTime === false) {
-                            throw new IllegalArgumentException("Timestamp has incorrect format");
+                            throw new \Exception("Timestamp has incorrect format");
                         }
                         $timestamp = $dateTime->getTimestamp();
                         $proposalsManager->changeCurrentProposal($placeName, $timestamp);
@@ -129,7 +129,7 @@ class AppointmentRequestManager
                         $dateTime = DateTime::createFromFormat('Y-m-d H:i:s',
                             Strings::getParamValueIn('create_proposition', 'param_timestamp', $vars), new \DateTimeZone('UTC'));
                         if ($dateTime === false) {
-                            throw new IllegalArgumentException("Timestamp has incorrect format");
+                            throw new \Exception("Timestamp has incorrect format");
                         }
                         $timestamp = $dateTime->getTimestamp();
                         $placeLon = Strings::getParamValueIn('create_proposition', 'param_lon', $vars);
@@ -156,7 +156,7 @@ class AppointmentRequestManager
             new \DateTimeZone('UTC'));
 
         if ($dateTime === false) {
-            throw new IllegalArgumentException("Parameter timestamp has incorrect format");
+            throw new \Exception("Parameter timestamp has incorrect format");
         }
         $timestamp = $dateTime->getTimestamp();
 

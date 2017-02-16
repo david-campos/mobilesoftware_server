@@ -79,7 +79,6 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $stmtBlocked = static::$link->prepare('SELECT b.`blocked` FROM `Blocked` b JOIN `Users` u ON(b.`blocker`=u.`_id`)
                                             WHERE u.`phone`=? AND b.`blocked`=? LIMIT 1');
         $stmtBlocked->bind_param('ii', $blocker, $blocked);
-        $times = 0;
         for ($idx = 0; $idx < count($invitedUsers); $idx++) {
             $blocker = $invitedUsers[$idx];
             $blocked = $creatorId;
@@ -95,16 +94,23 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         // Inserting invitations
         $stmtInvitation = static::$link->prepare('INSERT INTO `InvitedTo`(`user`,`appointment`)
                                                   VALUES ((SELECT `_id` FROM `Users` WHERE `phone`=? LIMIT 1), ?)');
+        $reallyInvited = 0;
         foreach ($invitedUsers as $invited) {
             $stmtInvitation->bind_param('ii', $invited, $id);
             try {
                 $stmtInvitation->execute();
+                $reallyInvited += $stmtInvitation->affected_rows;
             } catch (Exception $e) {
                 // Ignore 1048, probably phone incorrect
                 if ($e->getCode() != 1048) throw $e;
             }
         }
         $stmtInvitation->close();
+
+        if ($reallyInvited < 1) {
+            static::$link->rollback();
+            throw new \Exception('No valid invitations for the new appointment', 200);
+        }
 
         // Inserting initial proposition
         $proposition = DAOFactory::getInstance()->obtainPropositionsDAO()->createProposition(

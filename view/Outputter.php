@@ -31,5 +31,5 @@ interface Outputter
 
     public function printSessionKey(string $sessionKey, int $sessionId);
 
-    public function printApppointmentTypesAndReasons(array $appointmentTypes, array $reasons);
+    public function printAppointmentTypesAndReasons(array $appointmentTypes, array $reasons);
 }

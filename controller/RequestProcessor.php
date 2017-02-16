@@ -39,7 +39,7 @@ class RequestProcessor
         if ($request_identifier === Strings::getReqIdentifier("get_appointment_types_and_reasons")) {
             $types = $this->getAppointmentTypes();
             $reasons = $this->getAppointmentReasons();
-            $this->opt->printApppointmentTypesAndReasons($types, $reasons);
+            $this->opt->printAppointmentTypesAndReasons($types, $reasons);
         } else {
             $session_manager = new SessionManager();
             $phone = Strings::getGenParamValueIn('phone', $vars);

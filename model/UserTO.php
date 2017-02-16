@@ -22,14 +22,35 @@ class UserTO extends AbstractTO
         $this->blocked_ids = $blockedIds;
     }
 
-    public function toAssociativeArray(bool $withBlockedOnes): array {
+    public function toAssociativeArray(bool $withBlockedOnes) {
+        return $this->_toAssociativeArray($withBlockedOnes, true);
+    }
+
+    public function toAssociativeArrayDetailedBlockedOnes() {
+        return $this->_toAssociativeArray(true, false);
+    }
+
+    private function _toAssociativeArray(bool $withBlockedOnes, bool $blockedOnesOnlyId): array {
         $array = array(
             "id" => $this->getId(),
             "name" => $this->getName(),
             "phone" => $this->getPhone(),
             "picture_id" => $this->getPictureId());
         if ($withBlockedOnes) {
-            $array["blocked_ids"] = $this->getBlockedIds();
+            if ($blockedOnesOnlyId) {
+                $array["blocked_ids"] = $this->getBlockedIds();
+            } else {
+                $array["blocked_ids"] = array();
+                $dao = DAOFactory::getInstance()->obtainUsersDAO();
+                foreach ($this->getBlockedIds() as $blockedId) {
+                    // We pass false, the blocked ones of our blocked ones should be irrelevant
+                    // WARNING: to call toAssociativeArrayDetailedBlockedOnes would be equivalent to call
+                    // this same method with the same parameters, this could cause infinite recursion if
+                    // two users have blocked each one the other.
+                    $array["blocked_ids"][] =
+                        $dao->obtainUserTOById($blockedId)->toAssociativeArray(false);
+                }
+            }
         }
         return $array;
     }

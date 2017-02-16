@@ -33,7 +33,12 @@ class ProfileRequestManager
 
     public function processProfileRequest(array $vars) {
         $req_name = Strings::getGenParamValueIn('request', $vars);
+        $synchronize = true;
         switch ($req_name) {
+            case Strings::getReqIdentifier('who_am_I'):
+                // Just print the userTO
+                $synchronize = false;
+                break;
             case Strings::getReqIdentifier('block_user'):
                 $this->blockUser(Strings::getParamValueIn('block_user', 'param_blocked_phone', $vars));
                 break;
@@ -46,7 +51,7 @@ class ProfileRequestManager
             case Strings::getReqIdentifier('remove_profile_pic'):
                 $this->removeProfilePicture();
                 break;
-            case Strings::getReqIdentifier("filter_user_list"):
+            case Strings::getReqIdentifier('filter_user_list'):
                 $phones = explode(",", Strings::getParamValueIn("filter_user_list", "param_phones", $vars));
                 $users = $this->filterUsers($phones);
                 $usersArray = array();
@@ -59,9 +64,11 @@ class ProfileRequestManager
             default:
                 throw new WrongRequestException("The request '$req_name' is not a profile request.");
         }
-        // Synchronize to DB
-        $this->userTO->synchronize();
-        // Print
+        if ($synchronize) {
+            // Synchronize to DB
+            $this->userTO->synchronize();
+        }
+        // Print userTO
         $this->requestProcessor->getOutputter()->printUserTO($this->userTO);
     }
 

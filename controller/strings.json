@@ -64,6 +64,7 @@
       "name": "gappo"
     },
     "get_appointment_propositions": {
+      "processor_class": "AppointmentProposalsManager",
       "name": "gprop"
     },
     "block_user": {

@@ -36,15 +36,23 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
     }
 
     function obtainUserTO(string $phoneNumber): UserTO {
+        return $this->queryUsersTable('`phone`=?', 's', $phoneNumber);
+    }
+
+    function obtainUserTOById(int $id): UserTO {
+        return $this->queryUsersTable('`_id`=?', 'i', $id);
+    }
+
+    private function queryUsersTable(string $whereClause, string $paramType, $param): UserTO {
         static::$link->begin_transaction();
-        $stmt = static::$link->prepare('SELECT `_id`,`phone`,`name`,`picture_id` FROM `Users` WHERE `phone`=? LIMIT 1');
-        $stmt->bind_param('s', $phoneNumber);
+        $stmt = static::$link->prepare('SELECT `_id`,`phone`,`name`,`picture_id` FROM `Users` WHERE ' . $whereClause . ' LIMIT 1');
+        $stmt->bind_param($paramType, $param);
         $stmt->execute();
         $stmt->bind_result($id, $phone, $name, $picture_id);
         if (!$stmt->fetch()) {
             $stmt->close();
             static::$link->rollback();
-            throw new UnableToGetTOException("Unable to get UserTO with phone '$phoneNumber'.");
+            throw new UnableToGetTOException("Unable to get UserTO with param '$param'($paramType) and whereClause '$whereClause'.");
         }
         $stmt->close();
         $stmt = static::$link->prepare('SELECT `blocked` FROM `Blocked` WHERE `blocker`=?');

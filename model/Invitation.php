@@ -55,8 +55,9 @@ class Invitation
     }
 
     public function toAssociativeArray(): array {
+        $userTO = DAOFactory::getInstance()->obtainUsersDAO()->obtainUserTOById($this->getUser());
         return array(
-            "user" => $this->getUser(),
+            "user" => $userTO->toAssociativeArray(false),
             "state" => $this->getState(),
             "reasonName" => $this->getReasonName(),
             "reasonDescription" => $this->getReasonDescription()

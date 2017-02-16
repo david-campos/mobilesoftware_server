@@ -7,6 +7,7 @@ interface IUsersDAO
 {
     function obtainUserTO(string $phoneNumber): UserTO;
 
+    function obtainUserTOById(int $id): UserTO;
     function createUser(string $phoneNumber);
 
     /**

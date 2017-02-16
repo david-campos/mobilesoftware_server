@@ -1,16 +1,20 @@
 {
   "requests": {
     "init_session": {
+      "processor_class": "RequestProcessor",
       "name": "ses"
     },
     "get_appointment_types_and_reasons": {
+      "processor_class": "RequestProcessor",
       "name": "tar"
     },
     "filter_user_list": {
+      "processor_class": "ProfileRequestManager",
       "name": "ful",
       "param_phones": "ps"
     },
     "create_appointment": {
+      "processor_class": "AppointmentRequestManager",
       "name": "nappo",
       "param_name": "n",
       "param_description": "d",
@@ -24,24 +28,30 @@
       "param_reason": "r"
     },
     "close_appointment": {
+      "processor_class": "AppointmentRequestManager",
       "name": "cappo"
     },
     "open_appointment": {
+      "processor_class": "AppointmentRequestManager",
       "name": "oappo"
     },
     "accept_proposition": {
+      "processor_class": "AppointmentProposalsManager",
       "name": "aprop",
       "param_place": "p",
       "param_timestamp": "h"
     },
     "accept_invitation": {
+      "processor_class": "AppointmentInvitationsManager",
       "name": "ainv"
     },
     "refuse_invitation": {
+      "processor_class": "AppointmentInvitationsManager",
       "name": "rinv",
       "param_reason": "r"
     },
     "create_proposition": {
+      "processor_class": "AppointmentProposalsManager",
       "name": "nprop",
       "param_place": "p",
       "param_timestamp": "h",
@@ -50,26 +60,35 @@
       "param_reason": "r"
     },
     "get_user_appointments": {
+      "processor_class": "AppointmentRequestManager",
       "name": "gappo"
     },
     "get_appointment_propositions": {
       "name": "gprop"
     },
     "block_user": {
+      "processor_class": "ProfileRequestManager",
       "not_checked": "NOT",
       "name": "block",
       "param_blocked_phone": "p"
     },
     "change_user_name": {
+      "processor_class": "ProfileRequestManager",
       "name": "cname",
       "param_name": "n"
     },
     "change_profile_pic": {
+      "processor_class": "ProfileRequestManager",
       "not_checked": "NOT",
       "name": "cpic"
     },
     "remove_profile_pic": {
+      "processor_class": "ProfileRequestManager",
       "name": "rpic"
+    },
+    "who_am_I": {
+      "processor_class": "ProfileRequestManager",
+      "name": "wai"
     }
   },
   "general_params": {

@@ -18,6 +18,7 @@ require_once dirname(__FILE__) . '/ProfileRequestManager.php';
 require_once dirname(__FILE__) . '/SessionManager.php';
 require_once dirname(__FILE__) . '/Strings.php';
 
+use exceptions\IllegalArgumentException;
 use model\DAOFactory;
 use view\ViewFacade;
 
@@ -34,15 +35,15 @@ class RequestProcessor
     }
 
     public function processRequest(array $vars) {
-        $request_name = Strings::getGenParamValueIn('request', $vars);
-        if ($request_name === Strings::getReqName("get_appointment_types_and_reasons")) {
+        $request_identifier = Strings::getGenParamValueIn('request', $vars);
+        if ($request_identifier === Strings::getReqIdentifier("get_appointment_types_and_reasons")) {
             $types = $this->getAppointmentTypes();
             $reasons = $this->getAppointmentReasons();
             $this->opt->printApppointmentTypesAndReasons($types, $reasons);
         } else {
             $session_manager = new SessionManager();
             $phone = Strings::getGenParamValueIn('phone', $vars);
-            if ($request_name === Strings::getReqName("init_session")) {
+            if ($request_identifier === Strings::getReqIdentifier("init_session")) {
                 $session = $session_manager->login($phone);
                 $this->opt->printSessionKey(
                     $session[SessionManager::KEY_KEY],
@@ -52,17 +53,20 @@ class RequestProcessor
                 $sessKey = Strings::getGenParamValueIn('session_key', $vars);
                 if ($session_manager->logCheck($sessId, $sessKey, $phone)) {
                     $userTO = DAOFactory::getInstance()->obtainUsersDAO()->obtainUserTO($phone);
-                    switch ($request_name) {
-                        case Strings::getReqName("block_user"):
-                        case Strings::getReqName("change_user_name"):
-                        case Strings::getReqName("change_profile_pic"):
-                        case Strings::getReqName("filter_user_list"):
-                        case Strings::getReqName("remove_profile_pic"):
+                    switch (Strings::getReqProcessorClass($request_identifier)) {
+                        case 'ProfileRequestManager':
                             (new ProfileRequestManager($userTO, $this))->processProfileRequest($vars);
                             break;
-                        default:
+                        case 'AppointmentInvitationsManager':
+                        case 'AppointmentProposalsManager':
+                        case 'AppointmentRequestManager':
                             (new AppointmentRequestManager($userTO, $this))->processAppointmentRequest($vars);
                             break;
+                        case null:
+                            throw new IllegalArgumentException("The request '$request_identifier' doesn't exist");
+                            break;
+                        default:
+                            throw new \Exception("Req processor for '$request_identifier' not added in RequestProcessor yet");
                     }
                 } else {
                     $this->opt->printError("Session check failed", 100);

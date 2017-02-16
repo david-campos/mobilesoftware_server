@@ -34,19 +34,19 @@ class ProfileRequestManager
     public function processProfileRequest(array $vars) {
         $req_name = Strings::getGenParamValueIn('request', $vars);
         switch ($req_name) {
-            case Strings::getReqName('block_user'):
+            case Strings::getReqIdentifier('block_user'):
                 $this->blockUser(Strings::getParamValueIn('block_user', 'param_blocked_phone', $vars));
                 break;
-            case Strings::getReqName('change_user_name'):
+            case Strings::getReqIdentifier('change_user_name'):
                 $this->changeUsername(Strings::getParamValueIn('change_user_name', 'param_name', $vars));
                 break;
-            case Strings::getReqName('change_profile_pic'):
+            case Strings::getReqIdentifier('change_profile_pic'):
                 $this->changeProfilePicture();
                 break;
-            case Strings::getReqName('remove_profile_pic'):
+            case Strings::getReqIdentifier('remove_profile_pic'):
                 $this->removeProfilePicture();
                 break;
-            case Strings::getReqName("filter_user_list"):
+            case Strings::getReqIdentifier("filter_user_list"):
                 $phones = explode(",", Strings::getParamValueIn("filter_user_list", "param_phones", $vars));
                 $users = $this->filterUsers($phones);
                 $usersArray = array();

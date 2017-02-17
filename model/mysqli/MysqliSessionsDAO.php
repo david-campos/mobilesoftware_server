@@ -16,10 +16,10 @@ class MysqliSessionsDAO extends MysqliDAO implements ISessionsDAO
 
         $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
 
-        $stmt = static::$link->prepare('INSERT INTO `Sessions`(`user`, `session_key`, `initial_timestamp`)
+        $stmt = static::$link->prepare('INSERT INTO Sessions(user, session_key, initial_timestamp)
                                         VALUES(
                                           (
-                                            SELECT `_id` FROM `Users` WHERE `phone`=? LIMIT 1
+                                            SELECT _id FROM Users WHERE phone=? LIMIT 1
                                           ),?,?)');
         $stmt->bind_param('sss', $phone, $key, $now);
 
@@ -35,9 +35,9 @@ class MysqliSessionsDAO extends MysqliDAO implements ISessionsDAO
     public function getSessionKey(int $id, string $phone): string {
         static::$link->begin_transaction();
 
-        $stmt = static::$link->prepare('SELECT `session_key` FROM `Sessions`
-                                        WHERE `user` = (
-                                            SELECT `_id` FROM `Users` WHERE `phone`=? LIMIT 1
+        $stmt = static::$link->prepare('SELECT session_key FROM Sessions
+                                        WHERE user = (
+                                            SELECT _id FROM Users WHERE phone=? LIMIT 1
                                           ) AND _id = ?
                                         LIMIT 1');
         $stmt->bind_param('si', $phone, $id);
@@ -55,7 +55,7 @@ class MysqliSessionsDAO extends MysqliDAO implements ISessionsDAO
         static::$link->begin_transaction();
 
         $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
-        $stmt = static::$link->prepare('UPDATE `Sessions` SET `final_timestamp`=?
+        $stmt = static::$link->prepare('UPDATE Sessions SET final_timestamp=?
                                         WHERE _id = ?
                                         LIMIT 1');
         $stmt->bind_param('si', $now, $id);

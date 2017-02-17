@@ -18,15 +18,15 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $name = $userTO->getName();
         $picture = $userTO->getPictureId();
         $id = $userTO->getId();
-        $stmt = static::$link->prepare('UPDATE `Users` SET `phone`=?,`name`=?,`picture_id`=? WHERE `_id`=?');
+        $stmt = static::$link->prepare('UPDATE Users SET phone=?,name=?,picture_id=? WHERE _id=?');
         $stmt->bind_param('ssii', $phone, $name, $picture, $id);
         $stmt->execute();
         $stmt->fetch();
         $stmt->close();
 
-        $stmt = static::$link->prepare('INSERT INTO `Blocked` (`blocker`, `blocked`)
+        $stmt = static::$link->prepare('INSERT INTO Blocked (blocker, blocked)
                                         VALUES (?,?)
-                                        ON DUPLICATE KEY UPDATE `blocker`=?');
+                                        ON DUPLICATE KEY UPDATE blocker=?');
         $stmt->bind_param('iii', $id, $otherId, $id);
         foreach ($userTO->getBlockedIds() as $otherId) {
             $stmt->execute();
@@ -36,16 +36,16 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
     }
 
     function obtainUserTO(string $phoneNumber): UserTO {
-        return $this->queryUsersTable('`phone`=?', 's', $phoneNumber);
+        return $this->queryUsersTable('phone=?', 's', $phoneNumber);
     }
 
     function obtainUserTOById(int $id): UserTO {
-        return $this->queryUsersTable('`_id`=?', 'i', $id);
+        return $this->queryUsersTable('_id=?', 'i', $id);
     }
 
     private function queryUsersTable(string $whereClause, string $paramType, $param): UserTO {
         static::$link->begin_transaction();
-        $stmt = static::$link->prepare('SELECT `_id`,`phone`,`name`,`picture_id` FROM `Users` WHERE ' . $whereClause . ' LIMIT 1');
+        $stmt = static::$link->prepare('SELECT _id,phone,name,picture_id FROM Users WHERE ' . $whereClause . ' LIMIT 1');
         $stmt->bind_param($paramType, $param);
         $stmt->execute();
         $stmt->bind_result($id, $phone, $name, $picture_id);
@@ -55,7 +55,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
             throw new UnableToGetTOException("Unable to get UserTO with param '$param'($paramType) and whereClause '$whereClause'.");
         }
         $stmt->close();
-        $stmt = static::$link->prepare('SELECT `blocked` FROM `Blocked` WHERE `blocker`=?');
+        $stmt = static::$link->prepare('SELECT blocked FROM Blocked WHERE blocker=?');
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $stmt->bind_result($blocked);
@@ -74,7 +74,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         static::$link->begin_transaction();
         $name = "New user";
         $pic = 0;
-        $stmt = static::$link->prepare('INSERT INTO `Users`(`phone`,`name`,`picture_id`) VALUES(?,?,?)');
+        $stmt = static::$link->prepare('INSERT INTO Users(phone,name,picture_id) VALUES(?,?,?)');
         $stmt->bind_param('ssi', $phoneNumber, $name, $pic);
         $stmt->execute();
         $stmt->close();
@@ -88,7 +88,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
      */
     function getExistentUsers(array $phones): array {
         static::$link->begin_transaction();
-        $stmt = static::$link->prepare('SELECT `_id`,`phone`,`name`,`picture_id` FROM `Users` WHERE `phone`=? LIMIT 1');
+        $stmt = static::$link->prepare('SELECT _id,phone,name,picture_id FROM Users WHERE phone=? LIMIT 1');
         $stmt->bind_param('s', $phoneNumber);
         $stmt->bind_result($id, $phone, $name, $picture_id);
         $usersPre = array();
@@ -101,7 +101,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         }
         $stmt->close();
 
-        $stmt = static::$link->prepare('SELECT `blocked` FROM `Blocked` WHERE `blocker`=?');
+        $stmt = static::$link->prepare('SELECT blocked FROM Blocked WHERE blocker=?');
         $stmt->bind_param('i', $id);
         $users = array();
         $stmt->bind_result($blocked);

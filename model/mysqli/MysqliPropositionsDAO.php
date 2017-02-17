@@ -19,8 +19,8 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
 
         static::$link->begin_transaction();
 
-        $stmt = static::$link->prepare('SELECT `appointment`,`timestamp`,`placeLat`,`placeLon`,`placeName`,`proposer`,`reason`
-                                      FROM `Propositions` WHERE `appointment`=? AND `timestamp` = ? AND `placeName`=?
+        $stmt = static::$link->prepare('SELECT appointment,timestamp,placeLat,placeLon,placeName,proposer,reason
+                                      FROM Propositions WHERE appointment=? AND timestamp = ? AND placeName=?
                                       LIMIT 1');
         $stmt->bind_param('iss', $appointmentId, $time, $placeName);
         $appid = $appointmentId;
@@ -34,7 +34,7 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         }
         $stmt->close();
 
-        $stmt = static::$link->prepare('SELECT `name`, `description` FROM `Reasons` WHERE `name`=? LIMIT 1');
+        $stmt = static::$link->prepare('SELECT name, description FROM Reasons WHERE name=? LIMIT 1');
         $stmt->bind_param('s', $reason);
         $stmt->execute();
         $stmt->bind_result($reasonName, $reasonDescription);
@@ -64,8 +64,8 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         $appid = $appointmentId;
         $place = $placeName;
 
-        $stmt = static::$link->prepare('INSERT INTO `Propositions`(`appointment`,`timestamp`,`placeLat`,`placeLon`,
-                                              `placeName`,`proposer`,`reason`) VALUES(?,?,?,?,?,?,?)');
+        $stmt = static::$link->prepare('INSERT INTO Propositions(appointment,timestamp,placeLat,placeLon,
+                                              placeName,proposer,reason) VALUES(?,?,?,?,?,?,?)');
         $stmt->bind_param('isddsis', $appointmentId, $time, $coordinates['lat'], $coordinates['lon'], $placeName, $proposer, $reasonName);
         $stmt->execute();
         $stmt->close();
@@ -84,8 +84,8 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
 
         $returnPropositions = array();
 
-        $stmt = static::$link->prepare('SELECT p.`appointment`,p.`timestamp`,p.`placeLat`,p.`placeLon`,p.`placeName`,p.`proposer`,p.`reason`,r.`description`
-                                      FROM `Propositions` p LEFT JOIN `Reasons` r ON p.`reason` = r.`name` WHERE p.`appointment`=?');
+        $stmt = static::$link->prepare('SELECT p.appointment,p.timestamp,p.placeLat,p.placeLon,p.placeName,p.proposer,p.reason,r.description
+                                      FROM Propositions p LEFT JOIN Reasons r ON p.reason = r.name WHERE p.appointment=?');
         $stmt->bind_param('i', $appointmentId);
         $stmt->execute();
         $stmt->bind_result($appointmentId, $time, $placeLat, $placeLon, $placeName, $proposer, $reason, $reasonDescription);
@@ -108,8 +108,8 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         $app = $proposition->getAppointmentId();
         $time = (new \DateTime('@' . $proposition->getTimestamp()))->format('Y-m-d H:i:s');
         $place = $proposition->getPlaceName();
-        $stmt = static::$link->prepare('DELETE FROM `Propositions`
-                                        WHERE `appointment`=? AND `timestamp`=? AND `placeName`=? LIMIT 1');
+        $stmt = static::$link->prepare('DELETE FROM Propositions
+                                        WHERE appointment=? AND timestamp=? AND placeName=? LIMIT 1');
         $stmt->bind_param('iss', $app, $time, $place);
         $stmt->execute();
         $stmt->close();

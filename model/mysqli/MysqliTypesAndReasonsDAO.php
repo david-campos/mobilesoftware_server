@@ -14,7 +14,7 @@ class MysqliTypesAndReasonsDAO extends MysqliDAO implements ITypesAndReasonsDAO
     public function getTypes(): array {
         static::$link->begin_transaction();
 
-        $stmt = static::$link->prepare('SELECT `name`, `description`, `icon_id` FROM `AppointmentTypes`');
+        $stmt = static::$link->prepare('SELECT name, description, icon_id FROM AppointmentTypes');
         $stmt->execute();
         $stmt->bind_result($name, $description, $icon_id);
         $types = array();
@@ -34,7 +34,7 @@ class MysqliTypesAndReasonsDAO extends MysqliDAO implements ITypesAndReasonsDAO
     public function getReasons(): array {
         static::$link->begin_transaction();
 
-        $stmt = static::$link->prepare('SELECT `name`, `description` FROM `Reasons`');
+        $stmt = static::$link->prepare('SELECT name, description FROM Reasons');
         $stmt->execute();
         $stmt->bind_result($name, $description);
         $reasons = array();

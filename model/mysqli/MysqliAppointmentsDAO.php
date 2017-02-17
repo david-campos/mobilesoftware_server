@@ -16,9 +16,9 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
 {
     private function getInvitationsFor(int $id): array {
         $invitations = array();
-        $stmt = static::$link->prepare('SELECT i.`user`, i.`state`, i.`reason`, r.`description`
-                                       FROM `InvitedTo` i LEFT JOIN `Reasons` r ON r.`name`=i.`reason` 
-                                       WHERE `appointment`=?
+        $stmt = static::$link->prepare('SELECT i.user, i.state, i.reason, r.description
+                                       FROM InvitedTo i LEFT JOIN Reasons r ON r.name=i.reason 
+                                       WHERE appointment=?
                                        LIMIT 1');
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -39,9 +39,9 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
     function obtainAppointmentTO(int $id): AppointmentTO {
         static::$link->begin_transaction();
 
-        $stmt = static::$link->prepare('SELECT `name`, `description`, `closed`, `type`, `creator`, `currentProposal`, `currentPlaceName`
-                                      FROM `Appointments`
-                                      WHERE `_id`=?
+        $stmt = static::$link->prepare('SELECT name, description, closed, type, creator, currentProposal, currentPlaceName
+                                      FROM Appointments
+                                      WHERE _id=?
                                       LIMIT 1');
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -68,7 +68,7 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
 
         // Inserting appointment
         $closed = ($closed ? 1 : 0);
-        $stmt = static::$link->prepare('INSERT INTO `Appointments`(`name`,`description`,`closed`,`type`,`creator`)
+        $stmt = static::$link->prepare('INSERT INTO Appointments(name,description,closed,type,creator)
                                       VALUES(?,?,?,?,?)');
         $stmt->bind_param('ssiss', $name, $description, $closed, $typeName, $creatorId);
         $stmt->execute();
@@ -76,8 +76,8 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $stmt->close();
 
         // Check invited users that blocked the creator and remove them from the list
-        $stmtBlocked = static::$link->prepare('SELECT b.`blocked` FROM `Blocked` b JOIN `Users` u ON(b.`blocker`=u.`_id`)
-                                            WHERE u.`phone`=? AND b.`blocked`=? LIMIT 1');
+        $stmtBlocked = static::$link->prepare('SELECT b.blocked FROM Blocked b JOIN Users u ON(b.blocker=u._id)
+                                            WHERE u.phone=? AND b.blocked=? LIMIT 1');
         $stmtBlocked->bind_param('ii', $blocker, $blocked);
         for ($idx = 0; $idx < count($invitedUsers); $idx++) {
             $blocker = $invitedUsers[$idx];
@@ -92,8 +92,8 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $stmtBlocked->close();
 
         // Inserting invitations
-        $stmtInvitation = static::$link->prepare('INSERT INTO `InvitedTo`(`user`,`appointment`)
-                                                  VALUES ((SELECT `_id` FROM `Users` WHERE `phone`=? LIMIT 1), ?)');
+        $stmtInvitation = static::$link->prepare('INSERT INTO InvitedTo(user,appointment)
+                                                  VALUES ((SELECT _id FROM Users WHERE phone=? LIMIT 1), ?)');
         $reallyInvited = 0;
         foreach ($invitedUsers as $invited) {
             $stmtInvitation->bind_param('ii', $invited, $id);
@@ -120,8 +120,8 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         // Linking intitial proposition
         $proposalTimestamp = (new \DateTime('@' . $proposition->getTimestamp()))->format('Y-m-d H:i:s');
         $proposalPlace = $proposition->getPlaceName();
-        $stmt = static::$link->prepare('UPDATE `Appointments` SET `currentProposal`=?, `currentPlaceName`=?
-                                      WHERE `_id`=? LIMIT 1');
+        $stmt = static::$link->prepare('UPDATE Appointments SET currentProposal=?, currentPlaceName=?
+                                      WHERE _id=? LIMIT 1');
         $stmt->bind_param('ssi', $proposalTimestamp, $proposalPlace, $id);
         $stmt->execute();
         $stmt->close();
@@ -148,17 +148,17 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $currentPlaceName = $TO->getCurrentProposition()->getPlaceName();
         $id = $TO->getId();
 
-        $stmt = static::$link->prepare('UPDATE `Appointments`
-                                      SET `name`=?, `description`=?, `closed`=?, `type`=?, `creator`=?,
-                                        `currentProposal`=?, `currentPlaceName`=?
-                                      WHERE `_id`=? LIMIT 1');
+        $stmt = static::$link->prepare('UPDATE Appointments
+                                      SET name=?, description=?, closed=?, type=?, creator=?,
+                                        currentProposal=?, currentPlaceName=?
+                                      WHERE _id=? LIMIT 1');
         $stmt->bind_param('ssisissi', $name, $description, $closed, $type, $creator, $currentProposal, $currentPlaceName, $id);
         $stmt->execute();
         $stmt->close();
 
         $inv_appo = $inv_reason = $inv_state = $inv_user = null;
-        $stmt = static::$link->prepare('UPDATE `InvitedTo` SET `reason`=?, `state`=?
-                                        WHERE `user`=? AND `appointment`=? LIMIT 1');
+        $stmt = static::$link->prepare('UPDATE InvitedTo SET reason=?, state=?
+                                        WHERE user=? AND appointment=? LIMIT 1');
         $stmt->bind_param('ssii', $inv_reason, $inv_state, $inv_user, $inv_appo);
         $inv_appo = $TO->getId();
         foreach ($TO->getInvitations() as $invitation) {
@@ -176,10 +176,10 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
     function obtainAppointmentsOfUser(int $userId): array {
         static::$link->begin_transaction();
 
-        $stmt = static::$link->prepare('SELECT a.`_id`, a.`name`, a.`description`, a.`closed`, a.`type`, a.`creator`, a.`currentProposal`, a.`currentPlaceName`
-                                      FROM `Appointments` a LEFT JOIN `InvitedTo` i ON a.`_id` = i.`appointment`
-                                      WHERE a.`creator`=? OR i.`user` = ? 
-                                      GROUP BY a.`_id`');
+        $stmt = static::$link->prepare('SELECT a._id, a.name, a.description, a.closed, a.type, a.creator, a.currentProposal, a.currentPlaceName
+                                      FROM Appointments a LEFT JOIN InvitedTo i ON a._id = i.appointment
+                                      WHERE a.creator=? OR i.user = ? 
+                                      GROUP BY a._id');
         $stmt->bind_param('ii', $userId, $userId);
         $stmt->execute();
         $array = array();

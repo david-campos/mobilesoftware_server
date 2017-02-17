@@ -14,7 +14,7 @@ class MysqliSessionsDAO extends MysqliDAO implements ISessionsDAO
     public function insertSession(string $phone, string $key): int {
         static::$link->begin_transaction();
 
-        $now = date('Y-m-d H:i:s');
+        $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
 
         $stmt = static::$link->prepare('INSERT INTO `Sessions`(`user`, `session_key`, `initial_timestamp`)
                                         VALUES(
@@ -54,7 +54,7 @@ class MysqliSessionsDAO extends MysqliDAO implements ISessionsDAO
     public function closeSession(int $id) {
         static::$link->begin_transaction();
 
-        $now = date('Y-m-d H:i:s');
+        $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
         $stmt = static::$link->prepare('UPDATE `Sessions` SET `final_timestamp`=?
                                         WHERE _id = ?
                                         LIMIT 1');

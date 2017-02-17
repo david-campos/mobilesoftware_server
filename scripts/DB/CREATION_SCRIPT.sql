@@ -50,13 +50,13 @@ CREATE TABLE `Reasons` (
 -- Saves the different propositions of times the users do for a concrete
 -- appointment
 CREATE TABLE `Propositions` (
-	`appointment` INT NOT NULL,
-	`timestamp` TIMESTAMP NOT NULL,
-	`placeLat` FLOAT(10,6) NOT NULL,
-	`placeLon` FLOAT(10,6) NOT NULL,
-	`placeName` VARCHAR(100) NOT NULL,
-	`proposer` INT NOT NULL,
-	`reason` VARCHAR(50) DEFAULT NULL,
+	`appointment` INT          NOT NULL,
+	`timestamp`   DATETIME     NOT NULL,
+	`placeLat`    FLOAT(10,6)  NOT NULL,
+	`placeLon`    FLOAT(10,6)  NOT NULL,
+	`placeName`   VARCHAR(100) NOT NULL,
+	`proposer`    INT          NOT NULL,
+	`reason`      VARCHAR(50) DEFAULT NULL,
 	-- The next is done down because Appointments doesn't exist yet!
 	-- FOREIGN KEY (`appointment`) REFERENCES `Appointments`(`_id`)
 	--	ON DELETE CASCADE ON UPDATE CASCADE,
@@ -76,7 +76,7 @@ CREATE TABLE `Appointments` (
 	`closed`           TINYINT(1)           DEFAULT 0,
 	`type`             VARCHAR(50) NOT NULL,
 	`creator`          INT         NOT NULL,
-	`currentProposal`  TIMESTAMP,
+	`currentProposal`  DATETIME,
 	`currentPlaceName` VARCHAR(100),
 	FOREIGN KEY (`type`) REFERENCES `AppointmentTypes`(`name`)
 		ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -114,11 +114,11 @@ CREATE TABLE `InvitedTo` (
 -- Saves the information about the current and past sessions the moviles
 -- initiated in the server.
 CREATE TABLE `Sessions` (
-  `_id`               INT       NOT NULL AUTO_INCREMENT,
-  `user`              INT       NOT NULL,
-  `session_key`       CHAR(128) NOT NULL,
-  `initial_timestamp` TIMESTAMP NOT NULL,
-  `final_timestamp`   TIMESTAMP          DEFAULT '0000-00-00 00:00:00',
+	`_id`               INT       NOT NULL AUTO_INCREMENT,
+	`user`              INT       NOT NULL,
+	`session_key`       CHAR(128) NOT NULL,
+	`initial_timestamp` DATETIME  NOT NULL,
+	`final_timestamp`   DATETIME           DEFAULT '0000-00-00 00:00:00',
   FOREIGN KEY (`user`) REFERENCES `Users` (`_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,

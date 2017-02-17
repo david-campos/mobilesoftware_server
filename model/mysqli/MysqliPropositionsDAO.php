@@ -15,7 +15,7 @@ use exceptions\UnableToGetTOException;
 class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
 {
     public function obtainPropositionTO(int $appointmentId, int $timestamp, string $placeName): PropositionTO {
-        $time = date('Y-m-d H:i:s', $timestamp);
+        $time = (new \DateTime('@' . $timestamp))->format('Y-m-d H:i:s');
 
         static::$link->begin_transaction();
 
@@ -57,7 +57,7 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
      */
     public function createProposition(int $appointmentId, int $timestamp, string $placeName, array $coordinates,
                                       $reasonName, int $proposer): PropositionTO {
-        $time = date('Y-m-d H:i:s', $timestamp);
+        $time = (new \DateTime('@' . $timestamp))->format('Y-m-d H:i:s');
 
         static::$link->begin_transaction();
 
@@ -90,7 +90,7 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         $stmt->execute();
         $stmt->bind_result($appointmentId, $time, $placeLat, $placeLon, $placeName, $proposer, $reason, $reasonDescription);
         while ($stmt->fetch()) {
-            $timestamp = DateTime::createFromFormat('Y-m-d H:i:s', $time)->getTimestamp();
+            $timestamp = DateTime::createFromFormat('Y-m-d H:i:s', $time, new \DateTimeZone('UTC'))->getTimestamp();
 
             $returnPropositions[] = new PropositionTO($appointmentId, $timestamp, $placeLat, $placeLon, $placeName,
                 $reason, $reasonDescription, $proposer);
@@ -106,7 +106,7 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         static::$link->begin_transaction();
 
         $app = $proposition->getAppointmentId();
-        $time = date('Y-m-d H:i:s', $proposition->getTimestamp());
+        $time = (new \DateTime('@' . $proposition->getTimestamp()))->format('Y-m-d H:i:s');
         $place = $proposition->getPlaceName();
         $stmt = static::$link->prepare('DELETE FROM `Propositions`
                                         WHERE `appointment`=? AND `timestamp`=? AND `placeName`=? LIMIT 1');

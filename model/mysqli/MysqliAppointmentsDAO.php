@@ -49,7 +49,7 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $stmt->fetch();
         $stmt->close();
 
-        $currentProposal = DateTime::createFromFormat('Y-m-d H:i:s', $currentProposal)->getTimestamp();
+        $currentProposal = DateTime::createFromFormat('Y-m-d H:i:s', $currentProposal, new \DateTimeZone('UTC'))->getTimestamp();
         $proposition = DAOFactory::getInstance()->obtainPropositionsDAO()
             ->obtainPropositionTO($id, $currentProposal, $currentPlaceName);
 
@@ -118,7 +118,7 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
             $initialPropositionModel->getCoordinates(), $initialPropositionModel->getReasonName(), $creatorId);
 
         // Linking intitial proposition
-        $proposalTimestamp = date('Y-m-d H:i:s', $proposition->getTimestamp());
+        $proposalTimestamp = (new \DateTime('@' . $proposition->getTimestamp()))->format('Y-m-d H:i:s');
         $proposalPlace = $proposition->getPlaceName();
         $stmt = static::$link->prepare('UPDATE `Appointments` SET `currentProposal`=?, `currentPlaceName`=?
                                       WHERE `_id`=? LIMIT 1');
@@ -144,7 +144,7 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $closed = ($TO->isClosed() ? 1 : 0);
         $type = $TO->getTypeName();
         $creator = $TO->getCreatorId();
-        $currentProposal = date('Y-m-d H:i:s', $TO->getCurrentProposition()->getTimestamp());
+        $currentProposal = (new \DateTime('@' . $TO->getCurrentProposition()->getTimestamp()))->format('Y-m-d H:i:s');
         $currentPlaceName = $TO->getCurrentProposition()->getPlaceName();
         $id = $TO->getId();
 
@@ -186,7 +186,8 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $stmt->bind_result($id, $name, $description, $closed, $type, $creator, $currentProposal, $currentPlaceName);
         $stmt->store_result(); // So we can do other statement consults
         while ($stmt->fetch()) {
-            $currentProposal = DateTime::createFromFormat('Y-m-d H:i:s', $currentProposal)->getTimestamp();
+            $currentProposal = DateTime::createFromFormat(
+                'Y-m-d H:i:s', $currentProposal, new \DateTimeZone('UTC'))->getTimestamp();
 
             $proposition = DAOFactory::getInstance()->obtainPropositionsDAO()
                 ->obtainPropositionTO($id, $currentProposal, $currentPlaceName);

@@ -170,7 +170,7 @@ class AppointmentRequestManager
         }
         $name = Strings::getParamValueIn('create_appointment', 'param_name', $vars);
         $description = Strings::getParamValueIn('create_appointment', 'param_description', $vars);
-        $closed = Strings::getParamValueIn('create_appointment', 'param_closed', $vars);
+        $closed = (Strings::getParamValueIn('create_appointment', 'param_closed', $vars) === "true");
         $type = Strings::getParamValueIn('create_appointment', 'param_type', $vars);
         $users = preg_split(
             '/,/',

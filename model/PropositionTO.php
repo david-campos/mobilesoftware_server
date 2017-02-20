@@ -43,13 +43,14 @@ class PropositionTO
     }
 
     public function toAssociativeArray(): array {
+        $userTO = DAOFactory::getInstance()->obtainUsersDAO()->obtainUserTOById($this->getProposer());
         return array(
             "time" => $this->getTimestamp(),
             "coordinates" => $this->getCoordinates(),
             "placeName" => $this->getPlaceName(),
             "reasonName" => $this->getReasonName(),
             "reasonDescription" => $this->getReasonDescription(),
-            "proposer" => $this->getProposer(),
+            "proposer" => $userTO->toAssociativeArray(false),
             "appointment" => $this->getAppointmentId()
         );
     }

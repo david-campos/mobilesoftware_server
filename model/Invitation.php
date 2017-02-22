@@ -76,9 +76,9 @@ class Invitation
     }
 
     /**
-     * @param string $reasonName
+     * @param string|null $reasonName
      */
-    public function setReason(string $reasonName) {
+    public function setReason($reasonName) {
         $this->reasonName = $reasonName;
         $this->reasonDescription = false; // Indicates that it's not updated
     }

@@ -71,7 +71,6 @@ class MysqliPropositionsDAO extends MysqliDAO implements IPropositionsDAO
         $stmt->close();
 
         static::$link->commit();
-        //die("Appid($appid) Place($place) ".gettype($appid)." ".gettype($place));
         return $this->obtainPropositionTO($appid, $timestamp, $place);
     }
 

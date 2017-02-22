@@ -31,7 +31,7 @@ class AppointmentInvitationsManager
         $this->appointment = $appointment;
     }
 
-    public function changeInvitationState(string $newState, string $reasonName) {
+    public function changeInvitationState(string $newState, $reasonName) {
         $userId = $this->appointmentManager->getUserTO()->getId();
         foreach ($this->appointment->getInvitations() as $invitation) {
             if ($invitation->getUser() === $userId) {

@@ -93,8 +93,13 @@ class AppointmentRequestManager
                     case Strings::getReqIdentifier('accept_invitation'):
                     case Strings::getReqIdentifier('refuse_invitation'):
                         $invitationsManager = new AppointmentInvitationsManager($appointment, $this);
-                        $newState = ($request === Strings::getReqIdentifier('accept_invitation')) ? 'accepted' : 'refused';
-                        $reasonName = Strings::getParamValueIn('refuse_invitation', 'param_reason', $vars);
+                        if ($request === Strings::getReqIdentifier('accept_invitation')) {
+                            $newState = 'accepted';
+                            $reasonName = null;
+                        } else {
+                            $newState = 'refused';
+                            $reasonName = Strings::getParamValueIn('refuse_invitation', 'param_reason', $vars);
+                        }
                         $invitationsManager->changeInvitationState($newState, $reasonName);
                         $appointment->synchronize();
                         $appointment->updateInvitationsFromBD(); // Update invitation description

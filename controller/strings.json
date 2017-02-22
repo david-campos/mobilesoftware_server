@@ -45,6 +45,10 @@
       "processor_class": "AppointmentInvitationsManager",
       "name": "ainv"
     },
+    "set_pending_invitation": {
+      "processor_class": "AppointmentInvitationsManager",
+      "name": "pinv"
+    },
     "refuse_invitation": {
       "processor_class": "AppointmentInvitationsManager",
       "name": "rinv",

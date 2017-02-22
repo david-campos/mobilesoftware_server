@@ -92,9 +92,13 @@ class AppointmentRequestManager
                 switch ($request) {
                     case Strings::getReqIdentifier('accept_invitation'):
                     case Strings::getReqIdentifier('refuse_invitation'):
+                    case Strings::getReqIdentifier('set_pending_invitation'):
                         $invitationsManager = new AppointmentInvitationsManager($appointment, $this);
                         if ($request === Strings::getReqIdentifier('accept_invitation')) {
                             $newState = 'accepted';
+                            $reasonName = null;
+                        } else if ($request === Strings::getReqIdentifier('set_pending_invitation')) {
+                            $newState = 'pending';
                             $reasonName = null;
                         } else {
                             $newState = 'refused';

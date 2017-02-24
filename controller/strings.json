@@ -11,7 +11,8 @@
     "filter_user_list": {
       "processor_class": "ProfileRequestManager",
       "name": "ful",
-      "param_phones": "ps"
+      "param_phones": "ps",
+      "param_last_update": "l"
     },
     "create_appointment": {
       "processor_class": "AppointmentRequestManager",

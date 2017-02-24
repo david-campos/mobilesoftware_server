@@ -12,7 +12,8 @@ interface IUsersDAO
 
     /**
      * @param array $phones
+     * @param null|string $lastUpdate
      * @return UserTO[]
      */
-    function getExistentUsers(array $phones): array;
+    function getExistentUsers(array $phones, $lastUpdate): array;
 }

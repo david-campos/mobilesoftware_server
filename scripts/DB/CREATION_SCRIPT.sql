@@ -8,10 +8,11 @@ START TRANSACTION;
 -- Table Users
 -- Saves the data of the users that use the app
 CREATE TABLE Users (
-	_id        INT         NOT NULL AUTO_INCREMENT,
-	phone      VARCHAR(22) NOT NULL UNIQUE,
-	name       VARCHAR(30) NOT NULL,
-	picture_id INT         NOT NULL,
+	_id         INT         NOT NULL AUTO_INCREMENT,
+	phone       VARCHAR(22) NOT NULL UNIQUE,
+	name        VARCHAR(30) NOT NULL,
+	picture_id  INT         NOT NULL,
+	last_update DATETIME    NOT NULL,
 	PRIMARY KEY (_id)
 );
 

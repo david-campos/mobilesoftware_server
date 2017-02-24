@@ -18,8 +18,9 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $name = $userTO->getName();
         $picture = $userTO->getPictureId();
         $id = $userTO->getId();
-        $stmt = static::$link->prepare('UPDATE Users SET phone=?,name=?,picture_id=? WHERE _id=?');
-        $stmt->bind_param('ssii', $phone, $name, $picture, $id);
+        $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
+        $stmt = static::$link->prepare('UPDATE Users SET phone=?,name=?,picture_id=?,last_update=? WHERE _id=?');
+        $stmt->bind_param('ssisi', $phone, $name, $picture, $now, $id);
         $stmt->execute();
         $stmt->fetch();
         $stmt->close();
@@ -80,8 +81,9 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         static::$link->begin_transaction();
         $name = "New user";
         $pic = 0;
-        $stmt = static::$link->prepare('INSERT INTO Users(phone,name,picture_id) VALUES(?,?,?)');
-        $stmt->bind_param('ssi', $phoneNumber, $name, $pic);
+        $now = $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
+        $stmt = static::$link->prepare('INSERT INTO Users(phone,name,picture_id,last_update) VALUES(?,?,?,?)');
+        $stmt->bind_param('ssi', $phoneNumber, $name, $pic, $now);
         $stmt->execute();
         $stmt->close();
         static::$link->commit();
@@ -89,13 +91,18 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
 
     /**
      * @param string[] $phones
-     * @return UserTO[]
-     * @throws UnableToGetTOException
+     * @param null|string $lastUpdate
+     * @return array|UserTO[]
      */
-    function getExistentUsers(array $phones): array {
+    function getExistentUsers(array $phones, $lastUpdate): array {
         static::$link->begin_transaction();
-        $stmt = static::$link->prepare('SELECT _id,phone,name,picture_id FROM Users WHERE phone=? LIMIT 1');
-        $stmt->bind_param('s', $phoneNumber);
+        if ($lastUpdate === null) {
+            $stmt = static::$link->prepare('SELECT _id,phone,name,picture_id FROM Users WHERE phone=? LIMIT 1');
+            $stmt->bind_param('s', $phoneNumber);
+        } else {
+            $stmt = static::$link->prepare('SELECT _id,phone,name,picture_id FROM Users WHERE phone=? AND last_update>=? LIMIT 1');
+            $stmt->bind_param('ss', $phoneNumber, $lastUpdate);
+        }
         $stmt->bind_result($id, $phone, $name, $picture_id);
         $usersPre = array();
         foreach ($phones as $phn) {

@@ -11,6 +11,7 @@ namespace controller;
 require_once dirname(__FILE__) . '/ImageManager.php';
 
 use exceptions\IllegalArgumentException;
+use exceptions\RequiredParameterException;
 use exceptions\WrongRequestException;
 use model\DAOFactory;
 use model\UserTO;
@@ -56,7 +57,12 @@ class ProfileRequestManager
                 break;
             case Strings::getReqIdentifier('filter_user_list'):
                 $phones = explode(",", Strings::getParamValueIn("filter_user_list", "param_phones", $vars));
-                $users = $this->filterUsers($phones);
+                try {
+                    $lastUpdate = Strings::getParamValueIn("filter_user_list", "param_last_update", $vars);
+                } catch (RequiredParameterException $e) {
+                    $lastUpdate = null; // Not required
+                }
+                $users = $this->filterUsers($phones, $lastUpdate);
                 $usersArray = array();
                 foreach ($users as $usr) {
                     $blocked = in_array($usr->getId(), $this->userTO->getBlockedIds());
@@ -112,9 +118,10 @@ class ProfileRequestManager
 
     /**
      * @param array $phones
-     * @return UserTO[]
+     * @param null|string $lastUpdate
+     * @return array
      */
-    private function filterUsers(array $phones): array {
-        return DAOFactory::getInstance()->obtainUsersDAO()->getExistentUsers($phones);
+    private function filterUsers(array $phones, $lastUpdate): array {
+        return DAOFactory::getInstance()->obtainUsersDAO()->getExistentUsers($phones, $lastUpdate);
     }
 }

@@ -103,7 +103,11 @@ class UserTO extends AbstractTO
     public function remBlockedId(int $userId) {
         $idx = array_search($userId, $this->blocked_ids);
         if ($idx !== false) {
-            $this->blocked_ids = array_splice($this->blocked_ids, $idx, 1);
+            if (count($this->blocked_ids) > 1) {
+                $this->blocked_ids = array_splice($this->blocked_ids, $idx, 1);
+            } else {
+                $this->blocked_ids = array();
+            }
             $this->synchronized = false;
         }
     }

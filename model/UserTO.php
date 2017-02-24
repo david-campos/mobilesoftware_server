@@ -40,7 +40,7 @@ class UserTO extends AbstractTO
             if ($blockedOnesOnlyId) {
                 $array["blocked_ids"] = $this->getBlockedIds();
             } else {
-                $array["blocked_ids"] = array();
+                $array["blocked_users"] = array();
                 $dao = DAOFactory::getInstance()->obtainUsersDAO();
                 foreach ($this->getBlockedIds() as $blockedId) {
                     // We pass false, the blocked ones of our blocked ones should be irrelevant

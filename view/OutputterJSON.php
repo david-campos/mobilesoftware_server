@@ -115,7 +115,7 @@ class OutputterJSON implements Outputter
     }
 
     /**
-     * @param array(blocked=>bool,user=>UserTO) $usersList
+     * @param array (array(blocked=>bool,user=>UserTO)) $usersList
      */
     public function printUsers(array $usersList) {
         $users = array();

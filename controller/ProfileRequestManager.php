@@ -42,6 +42,9 @@ class ProfileRequestManager
             case Strings::getReqIdentifier('block_user'):
                 $this->blockUser(Strings::getParamValueIn('block_user', 'param_blocked_phone', $vars));
                 break;
+            case Strings::getReqIdentifier('unblock_user'):
+                $this->unblockUser(Strings::getParamValueIn('unblock_user', 'param_unblocked_phone', $vars));
+                break;
             case Strings::getReqIdentifier('change_user_name'):
                 $this->changeUsername(Strings::getParamValueIn('change_user_name', 'param_name', $vars));
                 break;
@@ -70,6 +73,14 @@ class ProfileRequestManager
         }
         // Print userTO
         $this->requestProcessor->getOutputter()->printUserTO($this->userTO);
+    }
+
+    private function unblockUser(string $userPhone) {
+        $unblockedGuy = DAOFactory::getInstance()->obtainUsersDAO()->obtainUserTO($userPhone);
+        if ($unblockedGuy !== null) {
+            $this->userTO->remBlockedId($unblockedGuy->getId());
+        } else
+            throw new IllegalArgumentException('The id of the user to unblock doesn\'t exist');
     }
 
     private function blockUser(string $userPhone) {

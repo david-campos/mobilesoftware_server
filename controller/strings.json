@@ -76,6 +76,11 @@
       "name": "block",
       "param_blocked_phone": "p"
     },
+    "unblock_user": {
+      "processor_class": "ProfileRequestManager",
+      "name": "unblock",
+      "param_unblocked_phone": "p"
+    },
     "change_user_name": {
       "processor_class": "ProfileRequestManager",
       "name": "cname",

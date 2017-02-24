@@ -47,7 +47,7 @@ class UserTO extends AbstractTO
                     // WARNING: to call toAssociativeArrayDetailedBlockedOnes would be equivalent to call
                     // this same method with the same parameters, this could cause infinite recursion if
                     // two users have blocked each one the other.
-                    $array["blocked_ids"][] =
+                    $array["blocked_users"][] =
                         $dao->obtainUserTOById($blockedId)->toAssociativeArray(false);
                 }
             }

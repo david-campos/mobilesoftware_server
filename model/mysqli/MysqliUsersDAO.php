@@ -24,6 +24,12 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $stmt->fetch();
         $stmt->close();
 
+        // Clear blocked users
+        $stmt = static::$link->prepare('DELETE FROM Blocked WHERE blocker=?');
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $stmt->close();
+
         $stmt = static::$link->prepare('INSERT INTO Blocked (blocker, blocked)
                                         VALUES (?,?)
                                         ON DUPLICATE KEY UPDATE blocker=?');

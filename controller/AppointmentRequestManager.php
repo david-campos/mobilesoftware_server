@@ -143,7 +143,11 @@ class AppointmentRequestManager
                         $timestamp = $dateTime->getTimestamp();
                         $placeLon = Strings::getParamValueIn('create_proposition', 'param_lon', $vars);
                         $placeLat = Strings::getParamValueIn('create_proposition', 'param_lat', $vars);
-                        $reasonName = Strings::getParamValueIn('create_proposition', 'param_reason', $vars);
+                        try {
+                            $reasonName = Strings::getParamValueIn('create_proposition', 'param_reason', $vars);
+                        } catch (RequiredParameterException $e) {
+                            $reasonName = null;
+                        }
                         $proposition = $proposalsManager->createReplaceProposal($timestamp, $placeName, $placeLon, $placeLat, $reasonName);
                         $this->requestProcessor->getOutputter()->printProposition($proposition);
                         break;

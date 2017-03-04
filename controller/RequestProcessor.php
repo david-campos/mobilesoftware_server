@@ -12,6 +12,8 @@ namespace controller;
 require_once dirname(__FILE__) . '/../view/ViewFacade.php';
 // Require the model
 require_once dirname(__FILE__) . '/../model/DAOFactory.php';
+// Require illegal argument exception
+require_once dirname(__FILE__) . '/../general_exceptions/IllegalArgumentException.php';
 // Require controller stuff
 require_once dirname(__FILE__) . '/AppointmentRequestManager.php';
 require_once dirname(__FILE__) . '/ProfileRequestManager.php';

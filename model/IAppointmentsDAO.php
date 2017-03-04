@@ -13,7 +13,12 @@ interface IAppointmentsDAO
 {
     function obtainAppointmentTO(int $id): AppointmentTO;
 
-    function obtainAppointmentsOfUser(int $userId): array;
+    /**
+     * @param int $userId
+     * @param string|null $last_update
+     * @return array
+     */
+    function obtainAppointmentsOfUser(int $userId, $last_update): array;
     function createAppointment(string $name, string $description, bool $closed, string $typeName, int $creatorId,
                                array $invitedUsers, PropositionTO $initialProposition): int;
 }

@@ -67,10 +67,11 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         static::$link->begin_transaction();
 
         // Inserting appointment
+        $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
         $closed = ($closed ? 1 : 0);
-        $stmt = static::$link->prepare('INSERT INTO Appointments(name,description,closed,type,creator)
-                                      VALUES(?,?,?,?,?)');
-        $stmt->bind_param('ssiss', $name, $description, $closed, $typeName, $creatorId);
+        $stmt = static::$link->prepare('INSERT INTO Appointments(name,description,closed,type,creator,last_update)
+                                      VALUES(?,?,?,?,?,?)');
+        $stmt->bind_param('ssisss', $name, $description, $closed, $typeName, $creatorId, $now);
         $stmt->execute();
         $id = $stmt->insert_id;
         $stmt->close();
@@ -147,12 +148,13 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         $currentProposal = (new \DateTime('@' . $TO->getCurrentProposition()->getTimestamp()))->format('Y-m-d H:i:s');
         $currentPlaceName = $TO->getCurrentProposition()->getPlaceName();
         $id = $TO->getId();
+        $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
 
         $stmt = static::$link->prepare('UPDATE Appointments
                                       SET name=?, description=?, closed=?, type=?, creator=?,
-                                        currentProposal=?, currentPlaceName=?
+                                        currentProposal=?, currentPlaceName=?, last_update=?
                                       WHERE _id=? LIMIT 1');
-        $stmt->bind_param('ssisissi', $name, $description, $closed, $type, $creator, $currentProposal, $currentPlaceName, $id);
+        $stmt->bind_param('ssisisssi', $name, $description, $closed, $type, $creator, $currentProposal, $currentPlaceName, $now, $id);
         $stmt->execute();
         $stmt->close();
 
@@ -173,14 +175,27 @@ class MysqliAppointmentsDAO extends MysqliDAO implements IAppointmentsDAO, ISync
         static::$link->commit();
     }
 
-    function obtainAppointmentsOfUser(int $userId): array {
+    /**
+     * @param int $userId
+     * @param null|string $last_update
+     * @return array
+     */
+    function obtainAppointmentsOfUser(int $userId, $last_update): array {
         static::$link->begin_transaction();
 
-        $stmt = static::$link->prepare('SELECT a._id, a.name, a.description, a.closed, a.type, a.creator, a.currentProposal, a.currentPlaceName
+        if ($last_update === null) {
+            $stmt = static::$link->prepare('SELECT a._id, a.name, a.description, a.closed, a.type, a.creator, a.currentProposal, a.currentPlaceName
                                       FROM Appointments a LEFT JOIN InvitedTo i ON a._id = i.appointment
                                       WHERE a.creator=? OR i.user = ? 
                                       GROUP BY a._id');
-        $stmt->bind_param('ii', $userId, $userId);
+            $stmt->bind_param('ii', $userId, $userId);
+        } else {
+            $stmt = static::$link->prepare('SELECT a._id, a.name, a.description, a.closed, a.type, a.creator, a.currentProposal, a.currentPlaceName
+                                      FROM Appointments a LEFT JOIN InvitedTo i ON a._id = i.appointment
+                                      WHERE (a.creator=? OR i.user = ?) AND a.last_update>=? 
+                                      GROUP BY a._id');
+            $stmt->bind_param('iis', $userId, $userId, $last_update);
+        }
         $stmt->execute();
         $array = array();
         $stmt->bind_result($id, $name, $description, $closed, $type, $creator, $currentProposal, $currentPlaceName);

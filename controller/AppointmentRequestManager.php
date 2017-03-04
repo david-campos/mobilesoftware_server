@@ -66,8 +66,13 @@ class AppointmentRequestManager
             case 'AppointmentRequestManager':
                 switch ($request) {
                     case Strings::getReqIdentifier('get_user_appointments'):
+                        try {
+                            $lastUpdate = Strings::getParamValueIn("get_user_appointments", "param_last_update", $vars);
+                        } catch (RequiredParameterException $e) {
+                            $lastUpdate = null; // Not required
+                        }
                         $this->requestProcessor->getOutputter()->printAppointmentList(
-                            DAOFactory::getInstance()->obtainAppointmentsDAO()->obtainAppointmentsOfUser($this->user->getId()));
+                            DAOFactory::getInstance()->obtainAppointmentsDAO()->obtainAppointmentsOfUser($this->user->getId(), $lastUpdate));
                         break;
                     case Strings::getReqIdentifier('create_appointment'):
                         $id = $this->createAppointment($vars);

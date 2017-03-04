@@ -66,6 +66,7 @@
     },
     "get_user_appointments": {
       "processor_class": "AppointmentRequestManager",
+      "param_last_update": "l",
       "name": "gappo"
     },
     "get_appointment_propositions": {

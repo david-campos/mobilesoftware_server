@@ -83,7 +83,7 @@ class MysqliUsersDAO extends MysqliDAO implements ISyncDAO, IUsersDAO
         $pic = 0;
         $now = (new \DateTime(null, new \DateTimeZone('UTC')))->format('Y-m-d H:i:s');
         $stmt = static::$link->prepare('INSERT INTO Users(phone,name,picture_id,last_update) VALUES(?,?,?,?)');
-        $stmt->bind_param('ssi', $phoneNumber, $name, $pic, $now);
+        $stmt->bind_param('ssis', $phoneNumber, $name, $pic, $now);
         $stmt->execute();
         $stmt->close();
         static::$link->commit();
